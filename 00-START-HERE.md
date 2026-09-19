@@ -39,6 +39,25 @@ concepts and skills." Ten questions, one per topic. Treat it as the syllabus.
 **Monday morning**
 - Read file 11 only. Nothing new. Re-do the two eigenvalue drills to warm up your hand.
 
+## The files
+
+| File | What it is |
+|---|---|
+| `01`–`08` | One per topic: teaching + worked examples + **5 drills with full answers** |
+| `09` | Tukey reflection + a table of "explain in one sentence" answers |
+| `10-MOCK-EXAM.md` | 10 fresh questions + 2 bonus, **full solutions**, timed practice |
+| `11-CHEATSHEET.md` | One page. Monday morning, read only this |
+| **`12-ASSIGNMENT-1-WORKED.md`** | **All 10 assignment questions, every part, worked step by step** |
+| **`13-METHOD-RECIPES.md`** | The mechanical sub-skills done slowly — go here if you're stuck on *how* |
+| `COVERAGE-AUDIT.md` | Proof of what was read, including the slide images |
+
+**Solved-example count: 25 worked examples + 50 drills + 12 mock questions + all 10
+assignment questions — every one with a full solution.**
+
+If you're stuck on a *concept*, use `01`–`08`.
+If you're stuck on a *procedure* (how do I solve `(A−λI)v = 0`?), use `13`.
+If you want exam-shaped practice, use `12` then `10`.
+
 ## Coverage
 
 All 136 slides, both PDFs and the notebook were read — then a **second pass** extracted the

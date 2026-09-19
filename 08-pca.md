@@ -201,13 +201,36 @@ word.)*
 
 ### Answers
 
-**D1.** Mean `(2.5, 2.5)`; `Xc` rows `(−1.5,−1.5), (−0.5,0.5), (0.5,−0.5), (1.5,1.5)`;
-`XcᵀXc = [[5,4],[4,5]]`; eigenvalues **9** and **1**; eigenvectors **(1,1)** and **(1,−1)**;
-**PC1 = (1,1)/√2**, matching the visible bottom-left-to-top-right diagonal spread of the
-four points; variance explained **90% / 10%**; covariance route gives the **same
-eigenvectors** with eigenvalues divided by n (9/4 and 1/4) and **identical proportions**;
-the eigenvalues of `XcᵀXc` play the role the squared singular values `σᵢ²` played in
-Topic 7 — they are the same quantity.
+**D1.** Step by step:
+
+*(i) Mean and centering.* Column means `(1+2+3+4)/4 = 2.5` and `(1+3+2+4)/4 = 2.5`, so the
+mean is `(2.5, 2.5)`. Subtracting it row by row:
+`Xc` rows = `(−1.5,−1.5), (−0.5, 0.5), (0.5,−0.5), (1.5, 1.5)`.
+Check: each column sums to 0 ✓
+
+*(ii) `XcᵀXc`.* `Σx² = 2.25+0.25+0.25+2.25 = 5`; `Σy² = 5` likewise;
+`Σxy = 2.25−0.25−0.25+2.25 = 4`. So `XcᵀXc = [[5,4],[4,5]]`.
+`tr = 10`, `det = 25−16 = 9` → `λ² − 10λ + 9 = 0` → `(λ−9)(λ−1) = 0` → **λ = 9, 1**.
+λ=9: `[[−4,4],[4,−4]]` → `v₂ = v₁` → **(1,1)**.  λ=1: `[[4,4],[4,4]]` → `v₂ = −v₁` → **(1,−1)**.
+(Orthogonal ✓, as required for a symmetric matrix.)
+
+*(iii) PC1.* The eigenvector for the larger eigenvalue: **PC1 = (1,1)**, unit form
+`(1/√2)(1,1)`. It matches the data — the four points run bottom-left to top-right along the
+45° diagonal, which is visibly the direction of greatest spread.
+
+*(iv) Variance explained.* Total `= 9+1 = 10` → PC1 **90%**, PC2 **10%**.
+
+*(v) Covariance route.* `Σcov = (1/4)XcᵀXc`. Scaling by a constant leaves eigenvectors
+unchanged and multiplies eigenvalues by that constant, so the **directions are identical**
+and the eigenvalues become `9/4 = 2.25` and `1/4 = 0.25`. Proportions are **unchanged**
+(`2.25/2.5 = 90%`) because the constant cancels in the ratio.
+
+*(vi) Link to energy.* The eigenvalues of `XcᵀXc` play the role the squared singular values
+`σᵢ²` played in Topic 7 — and they literally **are** `σ²`, since `XcᵀXc = VΣ²Vᵀ`.
+"Explained variance" and "energy retained" are the same quantity.
+
+*(Full narrative version with the reasoning spelled out: §3 above, and
+`12-ASSIGNMENT-1-WORKED.md` Q9.)*
 
 **D2.** Means: `(2+0+4+2)/4 = 2`, `(0+2+4+2)/4 = 2`. Mean `= (2,2)`.
 `Xc` rows: `(0,−2), (−2,0), (2,2), (0,0)`. *(Columns sum to 0 ✓)*

@@ -96,3 +96,32 @@ don't spend Sunday on them:
 The two proofs flagged as *possible bonus* marks are both in the notes anyway: the
 dot-product formula equivalence (file **03**, §1) and the Eckart–Young statement (file
 **07**, §2).
+
+
+---
+
+## Third pass — solved-example completeness
+
+You then asked whether every example is fully solved with step-by-step guidance. I audited
+my own files. Findings:
+
+**Already complete:** all 50 drills across files 01–08 had answers; all 12 mock questions had
+solutions; every topic file had at least one worked example.
+
+**Five genuine thin spots, now fixed:**
+
+| Gap | Fix |
+|---|---|
+| No full worked solutions to **Assignment 1 itself** — the best exam proxy | New file **`12-ASSIGNMENT-1-WORKED.md`**: all 10 questions, every sub-part, stepped |
+| `P⁻¹` never actually computed or `PDP⁻¹ = B` verified | `13` §R2, and Q6 Part 1 in `12` |
+| Normal equations derived but **never worked with numbers** | `13` §R3 — full least-squares line fit with orthogonality check |
+| Solving `(A−λI)v = 0` assumed rather than taught | `13` §R1 — including why the rows are always redundant |
+| Topic 8 drill D1 answer was a results-only paragraph | Rewritten as six stepped parts |
+
+Also added in `13`: independence testing, angle-from-cosine with a sign sanity table, exam
+answer layout, and a table of 9 free self-checks.
+
+**Academic-integrity note on file 12:** Assignment 1 is due 29 September (after the exam),
+must be handwritten, and the instructor's instruction 5 permits AI assistance **provided it
+is disclosed**. File 12 is written as a study reference with that disclosure requirement
+stated at the top.
