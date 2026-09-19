@@ -11,8 +11,8 @@ Write steps, not just answers. Write one sentence of interpretation after each r
 ## Q1 — Norms and distance [4]
 Let `x = (2, −3, 6)`.
 1. Compute `‖x‖₁`, `‖x‖₂`, `‖x‖∞`.
-2. Relative to `q = (0,0)`, compare `p = (5,0)` and `r = (3,3)`. Which is closer under
-   L1? Under L2?
+2. Relative to the **query point** `q = (0,0)`, compare the candidates `p = (5,0)` and
+   `r = (3,3)`. Which candidate is closer **to q** under L1? Which under L2?
 3. In one or two sentences, explain why changing the norm can change "nearest".
 
 ## Q2 — Matrix as a function, column picture, rank [5]

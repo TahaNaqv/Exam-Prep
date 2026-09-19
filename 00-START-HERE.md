@@ -49,6 +49,7 @@ concepts and skills." Ten questions, one per topic. Treat it as the syllabus.
 | `11-CHEATSHEET.md` | One page. Monday morning, read only this |
 | **`12-ASSIGNMENT-1-WORKED.md`** | **All 10 assignment questions, every part, worked step by step** |
 | **`13-METHOD-RECIPES.md`** | The mechanical sub-skills done slowly — go here if you're stuck on *how* |
+| **`14-NOTATION-PRIMER.md`** | **Every symbol decoded** — read this first if the notation is the wall |
 | `COVERAGE-AUDIT.md` | Proof of what was read, including the slide images |
 
 **Solved-example count: 25 worked examples + 50 drills + 12 mock questions + all 10

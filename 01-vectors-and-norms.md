@@ -138,8 +138,9 @@ Ridge just slides smoothly and never lands exactly on an axis.
 
 **D1.** `x = (3, −4, 1)`. Compute ‖x‖₁, ‖x‖₂, ‖x‖∞.
 
-**D2.** Query `q = (0,0)`. Candidates `p = (3,0)` and `r = (2,2)`.
-Which is closer under L1? Under L2? Explain the disagreement in one sentence.
+**D2.** Relative to the **query point** `q = (0,0)`, compare the candidates `p = (3,0)`
+and `r = (2,2)`. Which candidate is closer **to q** under L1 distance? Which is closer
+**to q** under L2? Explain the disagreement in one sentence.
 
 **D3.** `u = (1, 2)`, `w = (4, 6)`. Compute the L1 and L2 distance between them.
 
@@ -154,8 +155,11 @@ Which is closer under L1? Under L2? Explain the disagreement in one sentence.
 **D1.** L1 = 3+4+1 = **8**.  L2 = √(9+16+1) = √26 ≈ **5.10**.  L∞ = **4**.
 (Sanity check: 8 ≥ 5.10 ≥ 4 ✓)
 
-**D2.** L1: ‖p‖₁ = 3, ‖r‖₁ = 4 → **p is closer**.
-L2: ‖p‖₂ = 3, ‖r‖₂ = √8 ≈ 2.83 → **r is closer**.
+**D2.** Distance is the norm of a difference: `dist(p,q) = ‖p − q‖`. Here `q = (0,0)`, so
+`p − q = p` and each distance collapses to the norm of the candidate itself — a shortcut
+that works **only because the query sits at the origin**.
+L1: `dist(p,q) = 3`, `dist(r,q) = 4` → **p is closer to q**.
+L2: `dist(p,q) = 3`, `dist(r,q) = √8 ≈ 2.83` → **r is closer to q**.
 *They disagree because L2 squares each difference, so p's single large deviation of 3
 is penalised more heavily than r's two moderate deviations of 2, even though r's
 deviations sum to more.*
