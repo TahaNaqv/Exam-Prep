@@ -22,28 +22,50 @@ final self-check list. It is exactly these nine things:
 "The assignment is not a list of examination questions, but it tests the same underlying
 concepts and skills." Ten questions, one per topic. Treat it as the syllabus.
 
-## The 2-day plan
+## How each topic file is now structured
 
-**Saturday (today)**
-- Topic 1 → 2 → 3 (files 01, 02, 03). These are the foundation; everything else reuses them.
-- After each file, do its drills **on paper**. Not in your head. On paper.
-- Target: finish by tonight. ~4 hours if you stay honest about the drills.
+Read them **in this order within each file** — the worked examples exist so you never hit a
+drill not knowing what to do:
 
-**Sunday**
-- Morning: Topics 4 → 5 (files 04, 05). Eigenvalues are the most mechanical marks
-  on the paper — these are free marks once the recipe is automatic.
-- Afternoon: Topics 6 → 7 → 8 (files 06, 07, 08). SVD/PCA.
-- Evening: file 10 (full mock, timed) — including bonus **B1/B2** on SVD-by-hand and PCA
-  scores — then file 11 (one-page cheat sheet).
+```
+1. The teaching sections        →  what the idea IS
+2. "WORKED EXAMPLES" section    →  the SAME problem types, solved step by step
+3. "Drills"                     →  now you try, then check the answers below
+```
 
-**Monday morning**
-- Read file 11 only. Nothing new. Re-do the two eigenvalue drills to warm up your hand.
+**Never jump straight to the drills.** Read the worked example, then close the file and
+redo that example from scratch on paper. If you can reproduce it, the drill will be easy.
+If you can't, reread that one example — not the whole chapter.
+
+## Plan for the remaining time (exam is tomorrow)
+
+You have one day. Triage hard — do **not** try to read everything.
+
+**Priority 1 — the mechanical marks (do these first, they are the most recoverable)**
+- File `04` (eigenvalues) — worked examples then drills. **~10 of 45 marks, pure recipe.**
+- File `01` (norms) — quick, mechanical.
+- File `03` (dot product + projection) — his stated weakest class topic, so likely heavily examined.
+
+**Priority 2**
+- File `02` (rank) — learn the *full rank vs full column rank* trap specifically.
+- File `07` (energy) — short, formulaic, very likely on the paper.
+
+**Priority 3**
+- File `08` (PCA) — do Worked Example 1 at least once end to end.
+- File `05` (diagonalization) — mainly the `P⁻¹ vs Pᵀ` test.
+- File `06` (SVD) — the dimensions question is the most likely one.
+
+**Last hour tonight:** `11-CHEATSHEET.md` and the 8 traps. **Tomorrow morning:** cheat sheet
+only, plus one eigenvalue drill to warm up your hand.
+
+**If you run out of time**, files `04`, `01`, `03` and `07` cover the most marks for the
+least effort. Skipping `06` entirely costs you less than fumbling `04`.
 
 ## The files
 
 | File | What it is |
 |---|---|
-| `01`–`08` | One per topic: teaching + worked examples + **5 drills with full answers** |
+| `01`–`08` | One per topic: teaching → **step-by-step worked examples** → 5 drills with full answers |
 | `09` | Tukey reflection + a table of "explain in one sentence" answers |
 | `10-MOCK-EXAM.md` | 10 fresh questions + 2 bonus, **full solutions**, timed practice |
 | `11-CHEATSHEET.md` | One page. Monday morning, read only this |

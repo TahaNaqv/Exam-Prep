@@ -112,6 +112,218 @@ That is **SVD**, and that gap is the entire reason it exists. Topic 6.
 | Scalars | eigenvalues λ, can be negative or complex | singular values σ, always **≥ 0**, sorted descending |
 | Bases orthogonal? | only if A is symmetric | **always** — U and V are always orthogonal |
 
+## 6b. WORKED EXAMPLES — study these before the drills
+
+---
+
+### Worked Example 1 — build `P` and `D`, and test whether `Pᵀ` may replace `P⁻¹`
+
+> **Problem:** `A = [[3, 2], [1, 4]]`, with eigenpairs `λ=5 → (1,1)` and `λ=2 → (−2,1)`
+> (from Topic 4, Worked Example 1). Construct `P` and `D`, explain why `A¹⁰` becomes easy,
+> and decide whether `P⁻¹` can be replaced by `Pᵀ`.
+
+**Step 1 — build P from the eigenvectors, as COLUMNS.**
+
+The eigenvectors are `(1,1)` and `(−2,1)`. Stand each one **upright** and place it as a
+column:
+
+```
+        ┌            ┐
+P   =   │  1     −2  │       ← first row: first entries of each eigenvector
+        │  1      1  │       ← second row: second entries
+        └            ┘
+          ↑      ↑
+        for    for
+        λ=5    λ=2
+```
+
+> ⚠ **Columns, not rows.** Writing `[[1,1],[−2,1]]` is the most common mistake here.
+
+**Step 2 — build D from the eigenvalues, on the diagonal, in the MATCHING order.**
+
+Column 1 of P is the eigenvector for λ=5, so 5 goes in position `D₁₁`:
+
+```
+        ┌         ┐
+D   =   │  5   0  │
+        │  0   2  │
+        └         ┘
+```
+
+> **The orders must correspond.** Swapping P's columns is fine *only* if you also swap D's
+> diagonal. Mismatched is simply wrong.
+
+**Step 3 — state the decomposition.**
+
+```
+A = P D P⁻¹
+```
+
+**Step 4 — (optional) verify by computing `P⁻¹`.** For a 2×2, the inverse is: *swap the
+diagonal entries, negate the off-diagonal entries, divide by the determinant.*
+
+```
+det(P) = (1)(1) − (−2)(1) = 1 + 2 = 3
+
+         1    ┌          ┐        ┌              ┐
+P⁻¹  =  ───   │  1    2  │   =    │  1/3    2/3  │
+         3    │ −1    1  │        │ −1/3    1/3  │
+              └          ┘        └              ┘
+```
+
+Quick sanity check that `PP⁻¹ = I`:
+
+```
+row1 of P · col1 of P⁻¹ = (1)(1/3) + (−2)(−1/3) = 1/3 + 2/3 = 1  ✓
+row1 of P · col2 of P⁻¹ = (1)(2/3) + (−2)( 1/3) = 2/3 − 2/3 = 0  ✓
+```
+
+**Step 5 — why `A¹⁰` becomes easy.**
+
+```
+A² = (PDP⁻¹)(PDP⁻¹) = PD(P⁻¹P)DP⁻¹ = PD·I·DP⁻¹ = PD²P⁻¹
+```
+
+The inner `P⁻¹P` collapses to the identity, and this telescopes:
+
+```
+Aⁿ = P Dⁿ P⁻¹
+```
+
+> `Dⁿ` is **trivial** — a diagonal matrix to a power is just each diagonal entry to that
+> power: `D¹⁰ = diag(5¹⁰, 2¹⁰)`. Computing `A¹⁰` directly needs **ten full matrix
+> multiplications**; this way it's two scalar powers plus two matrix products.
+>
+> It also reveals the long-run behaviour instantly: `5¹⁰` dwarfs `2¹⁰`, so `A¹⁰` is
+> essentially a scaled projection onto the `(1,1)` direction.
+
+**Step 6 — can `P⁻¹` be replaced by `Pᵀ`? Test it, never assume.**
+
+The condition: **`P⁻¹ = Pᵀ` only when P is orthogonal** — its columns must be mutually
+orthogonal *and* each of length 1. That is guaranteed when **A is symmetric**.
+
+*Test (a): is A symmetric?*
+
+```
+A₁₂ = 2        A₂₁ = 1        2 ≠ 1   →   A is NOT symmetric
+```
+
+*Test (b): are the eigenvectors orthogonal?* Dot them:
+
+```
+(1,1) · (−2,1) = (1)(−2) + (1)(1) = −2 + 1 = −1  ≠  0   →   NOT orthogonal
+```
+
+> **Answer: No — the replacement is not valid here.** A is not symmetric and its
+> eigenvectors are not orthogonal, so P is not an orthogonal matrix. You must use the
+> genuine inverse `P⁻¹` computed in Step 4.
+
+---
+
+### Worked Example 2 — the symmetric case, where `Pᵀ` IS allowed
+
+> **Problem:** `A = [[5, 2], [2, 5]]`. Build P and D. Is `P⁻¹ = Pᵀ` valid?
+
+**Step 1 — eigenvalues.** `tr = 10`, `det = 25 − 4 = 21`.
+
+```
+λ² − 10λ + 21 = 0   →   (λ − 7)(λ − 3) = 0   →   λ = 7, 3
+```
+
+**Step 2 — eigenvectors.**
+
+```
+λ=7:  A − 7I = [ −2   2 ]   →  −2v₁ + 2v₂ = 0  →  v₂ = v₁   →  (1, 1)
+                [  2  −2 ]
+
+λ=3:  A − 3I = [  2   2 ]   →   2v₁ + 2v₂ = 0  →  v₂ = −v₁  →  (1, −1)
+                [  2   2 ]
+```
+
+**Step 3 — test orthogonality.**
+
+```
+(1,1) · (1,−1) = 1 − 1 = 0   ✓  ORTHOGONAL
+```
+
+> This is **not luck.** `A` is symmetric (`A₁₂ = A₂₁ = 2`), and symmetric matrices always
+> have orthogonal eigenvectors. That's the spectral theorem, and it's also why SVD always
+> exists (Topic 6).
+
+**Step 4 — orthogonal is not yet enough: NORMALISE.**
+
+`Pᵀ = P⁻¹` requires columns of **length 1**, not merely perpendicular. Check:
+
+```
+‖(1,1)‖ = √(1+1) = √2  ≠  1
+```
+
+So divide each column by its length `√2`:
+
+```
+             1    ┌          ┐
+P    =     ────   │  1    1  │              D  =  [ 7   0 ]
+            √2    │  1   −1  │                    [ 0   3 ]
+                  └          ┘
+```
+
+**Step 5 — conclude.**
+
+> **Yes, `P⁻¹ = Pᵀ` is valid here** — but only after normalising. A is symmetric, so its
+> eigenvectors are orthogonal; dividing each by `√2` makes them orthonormal, which makes P
+> an orthogonal matrix, for which the inverse and the transpose coincide.
+
+> **Compare with Worked Example 1, where the answer was NO.** Same question, opposite
+> answers. **Always test the matrix in front of you** — never memorise a verdict.
+
+---
+
+### Worked Example 3 — when diagonalization fails entirely
+
+> **Problem:** Why can't `S = [[1, 1], [0, 1]]` be diagonalized?
+
+**Step 1 — eigenvalues.** `tr = 2`, `det = (1)(1) − (1)(0) = 1`.
+
+```
+λ² − 2λ + 1 = 0   →   (λ − 1)² = 0   →   λ = 1 (repeated twice)
+```
+
+**Step 2 — find the eigenvectors.**
+
+```
+S − 1I = [ 0   1 ]     Row 1:  0·v₁ + 1·v₂ = 0   →   v₂ = 0
+         [ 0   0 ]     Row 2:  0 = 0  (no information)
+```
+
+`v₂ = 0`, and `v₁` is free. So every eigenvector looks like `(v₁, 0)` — they are **all
+multiples of `(1, 0)`**. There is only **one independent eigenvector direction.**
+
+**Step 3 — why that breaks diagonalization.**
+
+> To build `P` you need **2 independent columns** for a 2×2 matrix. You only have 1, so `P`
+> would be singular and `P⁻¹` wouldn't exist. **`S` is not diagonalizable** — even though it
+> is square and has real eigenvalues.
+
+**Step 4 — the point.**
+
+> This is one of three ways eigendecomposition fails: **non-square**, **too few independent
+> eigenvectors** (this case), or **complex eigenvalues** (e.g. a rotation).
+>
+> **SVD doesn't care** — it exists for `S`, and for every other matrix. That gap is exactly
+> why the next topic exists.
+
+---
+
+### What to notice across all three
+
+- **P = eigenvectors as columns. D = eigenvalues on the diagonal. Orders must match.**
+- `Aⁿ = PDⁿP⁻¹`, and `Dⁿ` is trivial — that's the whole payoff.
+- **`P⁻¹ = Pᵀ` requires orthonormal columns** → needs A symmetric → **then still normalise**.
+- Diagonalization fails for non-square, too-few-eigenvectors, or complex cases. SVD never fails.
+
+Now do the drills.
+
+
 ## 7. Drills
 
 **D1.** Using `B = [[4,1],[2,3]]` and its eigenpairs from Topic 4:

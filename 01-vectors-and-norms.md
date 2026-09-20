@@ -134,6 +134,171 @@ Corners are disproportionately likely first-contact points (many different conto
 orientations all hit the same corner first). The circle has no corners to land on, so
 Ridge just slides smoothly and never lands exactly on an axis.
 
+## 6b. WORKED EXAMPLES — study these before the drills
+
+Each example below is the **same type** as a drill, with different numbers. Read the
+example, then close the file and redo it from scratch. Only then attempt the drill.
+
+---
+
+### Worked Example 1 — computing all three norms
+
+> **Problem:** Let `v = (2, −6, 3)`. Compute `‖v‖₁`, `‖v‖₂` and `‖v‖∞`.
+
+**Step 1 — write down what each norm asks for.**
+
+| Norm | What to do |
+|---|---|
+| L1 | add the absolute values |
+| L2 | square each, add, take the square root |
+| L∞ | take the largest absolute value |
+
+**Step 2 — take absolute values first.** Do this once and reuse it; it prevents sign errors.
+
+```
+|2| = 2      |−6| = 6      |3| = 3
+```
+
+> ⚠ The minus sign **disappears**. `|−6| = 6`, not `−6`.
+
+**Step 3 — L1: add them.**
+
+```
+‖v‖₁ = 2 + 6 + 3 = 11
+```
+
+**Step 4 — L2: square, add, square-root.** Square the *original* entries (squaring kills
+the sign anyway, so `(−6)² = 36`, not `−36`).
+
+```
+2² = 4
+(−6)² = 36
+3² = 9
+          ────────
+sum     =   49
+
+‖v‖₂ = √49 = 7
+```
+
+**Step 5 — L∞: the largest absolute value.**
+
+```
+‖v‖∞ = max(2, 6, 3) = 6
+```
+
+**Step 6 — sanity check.** It must always be true that `L1 ≥ L2 ≥ L∞`:
+
+```
+11 ≥ 7 ≥ 6   ✓
+```
+
+> **Answer:** `‖v‖₁ = 11`, `‖v‖₂ = 7`, `‖v‖∞ = 6`.
+
+**If the check fails, you made an arithmetic error — go back.** This costs five seconds and
+catches most mistakes.
+
+---
+
+### Worked Example 2 — which candidate is nearest (L1 vs L2)
+
+> **Problem:** Relative to the query point `q = (0, 0)`, which of `p = (4, 0)` and
+> `r = (3, 3)` is closer **to q** under L1? Under L2?
+
+**Step 1 — know what "distance" means here.** Distance is always the **norm of a
+difference**:
+
+```
+dist(p, q) = ‖p − q‖
+```
+
+**Step 2 — compute the difference vectors.**
+
+```
+p − q = (4, 0) − (0, 0) = (4, 0)
+r − q = (3, 3) − (0, 0) = (3, 3)
+```
+
+> Because `q` is the origin, subtracting it changes nothing — the difference *is* the point.
+> **This shortcut only works when the query sits at (0,0).** If `q` were `(1,1)` you would
+> have to subtract properly.
+
+**Step 3 — L1 distance for each candidate.**
+
+```
+dist(p,q) = |4| + |0| = 4
+dist(r,q) = |3| + |3| = 6
+```
+
+`4 < 6` → **under L1, p is closer to q.**
+
+**Step 4 — L2 distance for each candidate.**
+
+```
+dist(p,q) = √(4² + 0²) = √16     = 4
+dist(r,q) = √(3² + 3²) = √18 ≈ 4.243
+```
+
+`4 < 4.243` → **under L2, p is also closer to q.**
+
+**Step 5 — interpret.** Here the two norms **agree**. That is normal — they don't *always*
+disagree. Disagreement needs the concentrated candidate to have a *larger* L1 total.
+
+**Step 6 — see a case where they DO disagree.** Change `p` to `(5, 0)`:
+
+```
+L1:  dist(p,q) = 5      dist(r,q) = 6      → p closer  (5 < 6)
+L2:  dist(p,q) = 5      dist(r,q) ≈ 4.243  → r closer  (4.243 < 5)
+```
+
+**Now they disagree.** `p` dumped all 5 units of difference into one coordinate; `r` spread
+6 units across two. L2 squares, so it punishes `p`'s concentration; L1 just totals and
+prefers `p`'s smaller sum.
+
+> **The sentence to write:** L2 squares each coordinate difference, so one large deviation
+> costs more than several small ones adding to the same total — which means "nearest"
+> depends on the norm you chose, not on the data alone.
+
+---
+
+### Worked Example 3 — distance between two arbitrary vectors
+
+> **Problem:** `u = (7, 1)`, `w = (2, 4)`. Find the L1 and L2 distance between them.
+
+**Step 1 — subtract to get the difference vector.** This is the step people skip, and
+skipping it is the single most common error in this topic.
+
+```
+u − w = (7 − 2, 1 − 4) = (5, −3)
+```
+
+**Step 2 — now take norms of that difference.** Do **not** take norms of `u` and `w`
+separately and subtract those — that is a different (and wrong) quantity.
+
+```
+L1:  ‖(5, −3)‖₁ = |5| + |−3| = 5 + 3 = 8
+L2:  ‖(5, −3)‖₂ = √(5² + (−3)²) = √(25 + 9) = √34 ≈ 5.83
+```
+
+**Step 3 — check.** `8 ≥ 5.83` ✓ (and L∞ would be 5, so `8 ≥ 5.83 ≥ 5` ✓)
+
+> **Answer:** L1 distance `= 8`, L2 distance `= √34 ≈ 5.83`.
+
+**Step 4 — note the direction doesn't matter.** `w − u = (−5, 3)`, and both norms would give
+the same answers, because norms discard sign. Distance from `u` to `w` equals distance from
+`w` to `u`, as it must.
+
+---
+
+### What to notice across all three
+
+Every problem in this topic is the same two moves:
+
+1. **If two things are involved, subtract first** to get one vector.
+2. **Apply the norm formula** to that single vector.
+
+Now do the drills.
+
+
 ## 7. Drills — do these on paper
 
 **D1.** `x = (3, −4, 1)`. Compute ‖x‖₁, ‖x‖₂, ‖x‖∞.

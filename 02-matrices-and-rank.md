@@ -167,6 +167,275 @@ determinant** — just check whether the columns of A are independent.
 
 Useful companion fact: `rank(AᵀA) = rank(A)`.
 
+## 8b. WORKED EXAMPLES — study these before the drills
+
+---
+
+### Worked Example 1 — computing `Av` (both methods, in full)
+
+> **Problem:** `A = [[2, 1], [3, 4]]`, `v = (5, 2)`. Compute `Av` by rows, then again by
+> columns.
+
+**Step 0 — decode the notation.** In `[[2, 1], [3, 4]]`, **each inner bracket is one row**:
+
+```
+        col1  col2
+       ┌           ┐
+row1   │  2    1   │
+row2   │  3    4   │
+       └           ┘
+```
+
+And `v` stands **upright** when you compute:
+
+```
+     ┌   ┐
+v =  │ 5 │
+     │ 2 │
+     └   ┘
+```
+
+> Write `v` vertically on paper. Most errors in this operation come from leaving it flat.
+
+**Step 1 — check the dimensions FIRST.** `A` is 2×2, `v` is 2×1.
+
+```
+(2 × 2)(2 × 1)
+    ↑___↑        these must match  →  2 = 2  ✓
+ ↑_______↑       these give the answer's shape  →  2×1
+```
+
+So the answer will be a **vector with 2 entries**. Knowing this before you start means you
+notice immediately if you produce something else.
+
+**Step 2 — row method: one row of A gives one entry of the answer.**
+
+*Entry 1, from row 1 = `[2, 1]`:*
+
+```
+   row 1  →  [ 2 ,  1 ]
+               ×     ×        multiply aligned pairs
+   v      →  [ 5 ,  2 ]
+
+   2 × 5 = 10
+   1 × 2 =  2
+          ──────
+            12
+```
+
+*Entry 2, from row 2 = `[3, 4]`.* Note `v` does **not** change — only the row moves:
+
+```
+   row 2  →  [ 3 ,  4 ]
+               ×     ×
+   v      →  [ 5 ,  2 ]
+
+   3 × 5 = 15
+   4 × 2 =  8
+          ──────
+            23
+```
+
+**Step 3 — assemble the answer.**
+
+```
+       ┌    ┐
+Av  =  │ 12 │     =  (12, 23)
+       │ 23 │
+       └    ┘
+```
+
+Two entries, as Step 1 predicted ✓
+
+> ⚠ **The answer is a vector, not a number.** Do not add 12 and 23 together.
+
+**Step 4 — column method: read A downwards instead.**
+
+```
+col1 = (2, 3)        col2 = (1, 4)
+```
+
+> Careful: column 1 is `(2, 3)` read **down**. Row 1 is `(2, 1)` read **across**. Different
+> vectors — this is the most common mix-up.
+
+`v = (5, 2)` now reads as an instruction: **"take 5 of column 1, plus 2 of column 2."**
+
+```
+Av = 5·(2, 3)  +  2·(1, 4)
+   = (10, 15)  +  (2, 8)
+   = (10+2, 15+8)
+   = (12, 23)          ← identical ✓
+```
+
+**Step 5 — why they always agree.** Write `v = 5e₁ + 2e₂`. Linearity gives
+
+```
+Av = A(5e₁ + 2e₂) = 5(Ae₁) + 2(Ae₂)
+```
+
+and `Ae₁` is exactly column 1, `Ae₂` is exactly column 2. So `Av` **must** be a weighted sum
+of A's columns — guaranteed for every matrix, not a coincidence of these numbers.
+
+> **Answer:** `Av = (12, 23)`. The column picture is the one to remember: **`Av` is a linear
+> combination of A's columns, weighted by v's entries.**
+
+---
+
+### Worked Example 2 — rank and a dependence relation
+
+> **Problem:** `B = [[1, 2, 3], [2, 4, 6]]`. Find rank(B), give a dependence relation, and
+> state whether B is rank-deficient and whether it has full column rank.
+
+**Step 1 — write out the columns.** Read **downwards**:
+
+```
+c₁ = (1, 2)      c₂ = (2, 4)      c₃ = (3, 6)
+```
+
+**Step 2 — test each pair for dependence.** For two vectors, ask: *is one a scalar multiple
+of the other?* Check whether the ratio is the same in every coordinate.
+
+```
+c₂ vs c₁:   2/1 = 2   and   4/2 = 2   →  same ratio  →  c₂ = 2·c₁    DEPENDENT
+c₃ vs c₁:   3/1 = 3   and   6/2 = 3   →  same ratio  →  c₃ = 3·c₁    DEPENDENT
+```
+
+**Step 3 — count what's genuinely independent.** Every column is a multiple of `c₁`. So a
+basis for what they span needs just **one** vector.
+
+```
+rank(B) = 1
+```
+
+**Step 4 — give a dependence relation.** Any one of these is a valid answer:
+
+```
+c₂ = 2·c₁        or        c₃ = 3·c₁        or        c₃ = c₁ + c₂
+```
+
+*(Check the third: `(1,2) + (2,4) = (3,6)` ✓)*
+
+**Step 5 — rank-deficient?** B is 2×3, so the maximum possible rank is
+`min(m, n) = min(2, 3) = 2`. We found rank 1.
+
+```
+1 < 2   →  YES, B is rank-deficient
+```
+
+**Step 6 — full column rank?** Full column rank means rank = **number of columns** = 3. We
+have rank 1.
+
+```
+1 ≠ 3   →  NO, B does not have full column rank
+```
+
+> **Answer:** rank 1; `c₂ = 2c₁` (for instance); rank-deficient **yes**; full column rank **no**.
+
+---
+
+### Worked Example 3 — the trap: full rank vs full column rank
+
+> **Problem:** `A = [[1, 0, 2], [0, 1, 3]]`. Same four questions.
+
+**Step 1 — columns:** `c₁ = (1,0)`, `c₂ = (0,1)`, `c₃ = (2,3)`.
+
+**Step 2 — independence.** `c₁` and `c₂` are clearly independent — neither is a multiple of
+the other (`(1,0)` has a zero where `(0,1)` doesn't).
+
+**Step 3 — can `c₃` be built from them?** Look for `c₃ = a·c₁ + b·c₂`:
+
+```
+a·(1,0) + b·(0,1) = (a, b)     and we want (2, 3)
+→  a = 2,  b = 3
+→  c₃ = 2c₁ + 3c₂     ✓  DEPENDENT
+```
+
+**Step 4 — rank.** Two independent columns, third redundant → **rank(A) = 2**.
+
+**Step 5 — rank-deficient?** Max possible is `min(2,3) = 2`. We have rank 2.
+
+```
+2 is NOT less than 2   →  NO, A is NOT rank-deficient — it is FULL RANK
+```
+
+**Step 6 — full column rank?** Needs rank = 3 columns. We have 2.
+
+```
+→  NO, A does NOT have full column rank
+```
+
+> ⚠ **This is the trap the instructor is hunting for.** The same matrix is **full rank**
+> *and* **lacks full column rank**. These are different questions with opposite answers.
+> A wide matrix (more columns than rows) can *never* have full column rank — you cannot fit
+> 3 independent vectors into ℝ².
+
+**Step 7 — is `AᵀA` invertible? (without a determinant)** Use the rule:
+
+> `AᵀA` is invertible **if and only if** A has full column rank.
+
+A does **not** have full column rank (Step 6), so **`AᵀA` is singular — not invertible.**
+Supporting detail: `AᵀA` is 3×3, but `rank(AᵀA) = rank(A) = 2 < 3`.
+
+---
+
+### Worked Example 4 — is this function linear?
+
+> **Problem:** Decide whether `f(v) = 4v` and `g(v) = v + (3, 0)` are linear.
+
+**Step 1 — know the test.** A function is linear when **both** hold for all inputs:
+
+```
+additivity:    f(u + w) = f(u) + f(w)
+homogeneity:   f(cu)    = c·f(u)
+```
+
+To prove linear you must show both. **To prove NOT linear you need only one failure.**
+
+**Step 2 — test `f(v) = 4v`.**
+
+```
+additivity:    f(u + w) = 4(u + w) = 4u + 4w
+               f(u) + f(w) = 4u + 4w          ✓  equal
+
+homogeneity:   f(cu) = 4(cu) = 4cu
+               c·f(u) = c(4u) = 4cu           ✓  equal
+```
+
+> **`f` is linear.**
+
+**Step 3 — test `g(v) = v + (3, 0)`.** Compute each side separately and compare.
+
+```
+left side:   g(u + w) = (u + w) + (3, 0)  =  u + w + (3, 0)
+
+right side:  g(u) + g(w) = [u + (3,0)] + [w + (3,0)]
+                         =  u + w + (6, 0)
+```
+
+```
+u + w + (3,0)   ≠   u + w + (6,0)
+```
+
+The shift got applied **twice** on the right and **once** on the left.
+
+> **`g` is NOT linear** — additivity fails. A shift is simple, but simple ≠ linear.
+
+**Step 4 — the ML point.** Every neural-network layer is a matrix multiply (linear) followed
+by a **nonlinear** activation. Stack linear layers alone and they collapse into one single
+matrix, so depth would buy nothing. The nonlinearity is the entire reason depth works.
+
+---
+
+### What to notice across all four
+
+- **Row picture** = read across, one row → one output entry.
+- **Column picture** = read down, `v`'s entries are the amounts of each column.
+- **Rank** = how many columns are genuinely independent. **Never about shape.**
+- **Full rank** and **full column rank** are different claims — check both separately.
+
+Now do the drills.
+
+
 ## 9. Drills
 
 **D1.** `A = [[1,0,1],[0,1,1]]`, `z = (2,−1,3)`.

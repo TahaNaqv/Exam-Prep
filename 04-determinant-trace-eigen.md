@@ -151,6 +151,258 @@ what real systems (including PageRank) actually do.
 - **PCA** — the top eigenvector of the covariance matrix is the first principal component
   (Topic 8).
 
+## 8b. WORKED EXAMPLES — study these before the drills
+
+The eigenvalue recipe is **identical every single time**. Learn it once here and it works
+on every matrix you'll be given.
+
+---
+
+### Worked Example 1 — the complete recipe, start to finish
+
+> **Problem:** `A = [[3, 2], [1, 4]]`. Find det, trace, the characteristic equation, both
+> eigenvalues, an eigenvector for each; verify one pair and check against trace/det.
+
+**Step 1 — determinant.** For `[[a,b],[c,d]]`, `det = ad − bc`. Here `a=3, b=2, c=1, d=4`:
+
+```
+det(A) = (3)(4) − (2)(1) = 12 − 2 = 10
+```
+
+> It's the **main diagonal product minus the other diagonal product**. Going the wrong way
+> gives `2 − 12 = −10` — watch the order.
+
+**Step 2 — trace.** Sum of the diagonal (top-left + bottom-right):
+
+```
+tr(A) = 3 + 4 = 7
+```
+
+**Step 3 — build the characteristic equation.** The definition is `det(A − λI) = 0`.
+`A − λI` means **subtract λ from each diagonal entry only**:
+
+```
+        ┌             ┐
+A − λI =│ 3−λ    2    │
+        │  1    4−λ   │
+        └             ┘
+```
+
+Now take its determinant (diagonal product minus off-diagonal product):
+
+```
+det(A − λI) = (3−λ)(4−λ) − (2)(1)
+
+expand the bracket:
+  (3−λ)(4−λ) = 12 − 3λ − 4λ + λ² = λ² − 7λ + 12
+
+subtract 2:
+  λ² − 7λ + 12 − 2 = λ² − 7λ + 10
+```
+
+```
+characteristic equation:   λ² − 7λ + 10 = 0
+```
+
+> **The shortcut — use it to check yourself.** For any 2×2, the equation is always
+> `λ² − tr·λ + det = 0`. Here that's `λ² − 7λ + 10` ✓ — matches, so the expansion was right.
+> (You may quote the shortcut directly, but showing the expansion once earns the method marks.)
+
+**Step 4 — solve the quadratic.** Find two numbers that **multiply to 10** and **add to 7**:
+5 and 2.
+
+```
+λ² − 7λ + 10 = (λ − 5)(λ − 2) = 0
+
+λ₁ = 5        λ₂ = 2
+```
+
+**Step 5 — eigenvector for λ = 5.** Solve `(A − 5I)v = 0`. Subtract 5 from the diagonal:
+
+```
+         ┌          ┐
+A − 5I = │ −2    2  │
+         │  1   −1  │
+         └          ┘
+```
+
+Write out the two row equations:
+
+```
+Row 1:  −2v₁ + 2v₂ = 0
+Row 2:    v₁ −  v₂ = 0
+```
+
+> **Notice the rows are redundant** — Row 1 is `−2 ×` Row 2. **This always happens**, and it
+> confirms λ was computed correctly. If the rows were independent you'd have the wrong λ.
+
+Use either row. Row 2 is simpler:
+
+```
+v₁ − v₂ = 0   →   v₂ = v₁
+```
+
+Pick the simplest value, `v₁ = 1`:
+
+```
+v = (1, 1)
+```
+
+**Step 6 — eigenvector for λ = 2.** Subtract 2 from the diagonal:
+
+```
+         ┌         ┐
+A − 2I = │ 1    2  │
+         │ 1    2  │
+         └         ┘
+```
+
+```
+Row 1:  v₁ + 2v₂ = 0   →   v₁ = −2v₂
+```
+
+Pick `v₂ = 1` (chosen to avoid fractions):
+
+```
+v₁ = −2     →     v = (−2, 1)
+```
+
+> **Choosing the free variable:** set whichever one makes the other come out a whole number.
+> Here setting `v₁ = 1` would give `v₂ = −0.5` — correct but uglier.
+
+**Step 7 — verify one eigenpair by direct multiplication.**
+
+```
+Check λ = 5 with v = (1,1):
+
+  Av = row1·v = (3)(1) + (2)(1) = 5
+       row2·v = (1)(1) + (4)(1) = 5        →  Av = (5, 5)
+
+  λv = 5 · (1,1) = (5, 5)                  →  EQUAL  ✓
+```
+
+*(And for λ=2: `A(−2,1) = (−6+2, −2+4) = (−4, 2) = 2·(−2,1)` ✓)*
+
+**Step 8 — the free check against trace and determinant.**
+
+```
+λ₁ + λ₂ = 5 + 2 = 7     and    tr(A) = 7    ✓
+λ₁ × λ₂ = 5 × 2 = 10    and   det(A) = 10   ✓
+```
+
+> **Use this on every eigenvalue question.** It costs three seconds and catches sign errors
+> and arithmetic slips instantly.
+
+**Step 9 — is A invertible?**
+
+> Yes. `det(A) = 10 ≠ 0`, so the transformation doesn't collapse area — no dimension is
+> destroyed, and the map can be undone. Equivalently: neither eigenvalue is zero.
+
+> **Answer:** `det = 10`, `tr = 7`, `λ² − 7λ + 10 = 0`, `λ = 5, 2`, eigenvectors `(1,1)` and
+> `(−2, 1)`, invertible.
+
+---
+
+### Worked Example 2 — a singular matrix (what a zero eigenvalue means)
+
+> **Problem:** `M = [[3, 6], [1, 2]]`. Find det and the eigenvalues. What do they say about
+> invertibility and rank?
+
+**Step 1 — det and trace.**
+
+```
+det(M) = (3)(2) − (6)(1) = 6 − 6 = 0
+tr(M)  = 3 + 2 = 5
+```
+
+**Step 2 — characteristic equation** (using the shortcut `λ² − tr·λ + det`):
+
+```
+λ² − 5λ + 0 = 0
+```
+
+**Step 3 — solve.** Factor out λ — don't reach for the quadratic formula:
+
+```
+λ(λ − 5) = 0
+
+λ₁ = 5        λ₂ = 0
+```
+
+**Step 4 — eigenvector for λ = 5.**
+
+```
+M − 5I = [ −2   6 ]      Row 2:  v₁ − 3v₂ = 0  →  v₁ = 3v₂
+         [  1  −3 ]      take v₂ = 1  →  v = (3, 1)
+```
+
+*(Check: `M(3,1) = (9+6, 3+2) = (15,5) = 5(3,1)` ✓)*
+
+**Step 5 — eigenvector for λ = 0.** Here `M − 0I` is just `M`:
+
+```
+Row 2:  v₁ + 2v₂ = 0  →  v₁ = −2v₂
+take v₂ = 1  →  v = (−2, 1)
+```
+
+*(Check: `M(−2,1) = (−6+6, −2+2) = (0, 0) = 0·(−2,1)` ✓)*
+
+**Step 6 — interpret. This is where the marks are.**
+
+> A **zero eigenvalue** means there is a direction the matrix crushes **completely to
+> nothing** — here, `(−2,1)` is sent to the origin. Therefore:
+>
+> - `det(M) = 0`, so **M is singular — not invertible.** Once a whole direction maps to
+>   zero, many different inputs share the same output and cannot be told apart afterwards.
+> - **M is rank-deficient**: rank 1, not 2. (Indeed `col₂ = 2·col₁`.)
+> - Geometrically, M **flattens the entire plane onto a single line**.
+
+**Step 7 — check.** `λ₁ + λ₂ = 5 + 0 = 5 = tr` ✓  `λ₁ × λ₂ = 0 = det` ✓
+
+---
+
+### Worked Example 3 — eigenvalues from trace and determinant alone
+
+> **Problem:** A 2×2 matrix has `tr = 9` and `det = 20`. Find its eigenvalues without seeing
+> the matrix.
+
+**Step 1 — you don't need the matrix.** The characteristic equation only ever uses these two
+numbers:
+
+```
+λ² − tr·λ + det = 0
+λ² − 9λ + 20 = 0
+```
+
+**Step 2 — factor.** Two numbers multiplying to 20 and adding to 9: **5 and 4**.
+
+```
+(λ − 5)(λ − 4) = 0   →   λ = 5 and λ = 4
+```
+
+**Step 3 — check.** `5 + 4 = 9 = tr` ✓  `5 × 4 = 20 = det` ✓
+
+> **Answer:** `λ = 5, 4`.
+
+*(If it doesn't factor nicely, use the quadratic formula `λ = [tr ± √(tr² − 4det)]/2`.)*
+
+---
+
+### The recipe, condensed
+
+```
+1.  det = ad − bc          and      tr = a + d
+2.  λ² − tr·λ + det = 0
+3.  factor → two eigenvalues
+4.  for each λ:  subtract λ from the diagonal, write the row equations,
+                 note they're redundant, solve one, pick whole numbers
+5.  verify Av = λv
+6.  check λ₁+λ₂ = tr  and  λ₁λ₂ = det
+```
+
+Now do the drills.
+
+
 ## 9. Drills
 
 **D1.** `B = [[4,1],[2,3]]`. Full treatment: det, trace, characteristic equation, both

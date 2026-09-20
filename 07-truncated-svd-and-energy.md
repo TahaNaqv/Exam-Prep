@@ -146,6 +146,209 @@ ever supplied**. (Details in Topic 6 §5.)
 4. **Missing data needs care.** Ordinary SVD assumes a complete matrix. Missing entries —
    very common in real recommender data — need specialised methods, not naive SVD.
 
+## 8b. WORKED EXAMPLES — study these before the drills
+
+---
+
+### Worked Example 1 — energy, retention, error, and choosing k
+
+> **Problem:** A matrix has singular values `σ = (5, 3, 2, 1)`.
+> (a) Total energy. (b) Energy retained at rank 1, 2, 3. (c) Frobenius error at rank 2.
+> (d) Smallest k retaining ≥95%.
+
+**Step 1 — square every singular value first.** Do this once, write the list down, and reuse
+it for everything. Nearly all mistakes in this topic come from forgetting the square.
+
+```
+σ₁ = 5   →   σ₁² = 25
+σ₂ = 3   →   σ₂² =  9
+σ₃ = 2   →   σ₃² =  4
+σ₄ = 1   →   σ₄² =  1
+```
+
+**Step 2 — (a) total energy = sum of the SQUARED values.**
+
+```
+Total = 25 + 9 + 4 + 1 = 39
+```
+
+> ⚠ **Not** `5 + 3 + 2 + 1 = 11`. Energy is always the sum of **squares**. This is item 6 on
+> the instructor's self-check list.
+
+**Step 3 — (b) energy retained = (squares you KEEP) ÷ (total).**
+
+*Rank 1 — keep σ₁ only:*
+```
+25 / 39 = 0.6410  →  64.10%
+```
+
+*Rank 2 — keep σ₁ and σ₂:*
+```
+(25 + 9) / 39 = 34 / 39 = 0.8718  →  87.18%
+```
+
+*Rank 3 — keep σ₁, σ₂, σ₃:*
+```
+(25 + 9 + 4) / 39 = 38 / 39 = 0.9744  →  97.44%
+```
+
+> **Cumulative, not individual.** Rank 2 means "the first two together", so you add them up.
+
+**Step 4 — (c) Frobenius error uses the squares you DROPPED, and has a SQUARE ROOT.**
+
+```
+‖A − Aₖ‖_F = √( σ²ₖ₊₁ + σ²ₖ₊₂ + ... )
+```
+
+At rank 2 you dropped `σ₃ = 2` and `σ₄ = 1`:
+
+```
+‖A − A₂‖_F = √(σ₃² + σ₄²) = √(4 + 1) = √5 ≈ 2.236
+```
+
+> ⚠ **The two formulas are easy to confuse. Keep them straight:**
+>
+> | | uses | square root? | form |
+> |---|---|---|---|
+> | **Energy retained** | the values you **KEEP** | **no** | a ratio (%) |
+> | **Frobenius error** | the values you **DROPPED** | **yes** | a length |
+
+**Step 5 — (d) find the smallest k reaching 95%.** Walk up the cumulative list and stop at
+the first one that passes:
+
+```
+k = 1  →  64.10%   ✗  below 95
+k = 2  →  87.18%   ✗  below 95
+k = 3  →  97.44%   ✓  PASSES
+
+→  k = 3
+```
+
+**Step 6 — free cross-check.** Retained fraction + error²/total must equal 1:
+
+```
+at k=2:   34/39 + 5/39 = 39/39 = 1   ✓
+```
+
+> **Answers:** (a) 39. (b) 64.10%, 87.18%, 97.44%. (c) √5 ≈ 2.236. (d) k = 3.
+
+**Step 7 — write the interpretation sentence.**
+
+> "Three of the four components already capture 97.4% of the matrix's total signal, so the
+> fourth can be discarded with negligible loss — and by Eckart–Young this rank-3 truncation
+> is the best possible rank-3 approximation of A."
+
+---
+
+### Worked Example 2 — truncation made concrete on a diagonal matrix
+
+> **Problem:** `A = diag(6, 4, 3)` — i.e. `[[6,0,0],[0,4,0],[0,0,3]]`. Write `A₁` and `A₂`
+> and give the Frobenius error of each.
+
+**Step 1 — read off the singular values.** For a **diagonal** matrix with positive entries,
+the singular values *are* the diagonal entries:
+
+```
+σ = (6, 4, 3)
+```
+
+**Step 2 — truncating means literally deleting the smaller diagonal entries.**
+
+```
+            ┌           ┐                        ┌           ┐
+A₁    =     │ 6   0   0 │           A₂    =      │ 6   0   0 │
+            │ 0   0   0 │                        │ 0   4   0 │
+            │ 0   0   0 │                        │ 0   0   0 │
+            └           ┘                        └           ┘
+```
+
+**Step 3 — errors, from the dropped values.**
+
+```
+‖A − A₁‖_F = √(4² + 3²) = √(16 + 9) = √25 = 5
+‖A − A₂‖_F = √(3²)      = √9        = 3
+```
+
+**Step 4 — notice what the formula does and doesn't use.**
+
+> The error depends **only on the singular values you threw away**. Nothing about the values
+> you kept enters the formula at all. That's exactly the content of the Eckart–Young error
+> clause, visible directly.
+
+**Step 5 — energies, for completeness.**
+
+```
+Total = 36 + 16 + 9 = 61
+rank 1:  36/61 ≈ 59.0%
+rank 2:  52/61 ≈ 85.2%
+```
+
+---
+
+### Worked Example 3 — counting the storage saving
+
+> **Problem:** A grayscale image is `500 × 800`. You keep a rank-40 truncated SVD. How many
+> values must you store, and what's the compression ratio?
+
+**Step 1 — the original.**
+
+```
+500 × 800 = 400,000 values
+```
+
+**Step 2 — what a rank-k SVD actually stores.** Three pieces:
+
+```
+Uₖ   :  m × k  =  500 × 40  =  20,000 values
+Σₖ   :  just the k singular values (the rest of Σ is zeros)  =  40 values
+Vₖᵀ  :  k × n  =  40 × 800  =  32,000 values
+                              ─────────────
+                                52,040 values
+```
+
+The compact formula for this is:
+
+```
+k(m + n + 1) = 40 × (500 + 800 + 1) = 40 × 1301 = 52,040   ✓
+```
+
+> The `+1` is the singular value for that component; `m` and `n` are its column of U and row
+> of `Vᵀ`.
+
+**Step 3 — the ratio.**
+
+```
+400,000 / 52,040 ≈ 7.69×
+```
+
+**Step 4 — the percentage saved.**
+
+```
+stored:  52,040 / 400,000 = 13.0%
+saved:   100% − 13.0% = 87.0%
+```
+
+**Step 5 — state the honest caveat.**
+
+> ⚠ This is a comparison **in number of values, not bytes**. If the original is stored as
+> `uint8` (1 byte per value) and the SVD factors as `float32` (4 bytes per value), the true
+> byte-level saving is considerably smaller. Say this if you quote the figure — it's exactly
+> the interpretive care being marked.
+
+> **Answer:** 52,040 values, ≈7.7× compression, ≈87% fewer values.
+
+---
+
+### What to notice across all three
+
+- **Square the singular values first.** Write the squares down once and reuse them.
+- **Retained** = kept ÷ total, a **ratio, no root**. **Error** = √(dropped), a **length, with root**.
+- **Choosing k**: walk the cumulative list, stop at the first value that passes the target.
+- **Storage** = `k(m + n + 1)`.
+
+Now do the drills.
+
+
 ## 9. Drills
 
 **D1.** `σ₁ = 4, σ₂ = 3, σ₃ = 1`.

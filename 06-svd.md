@@ -136,6 +136,224 @@ unless A is square.
 - **LoRA** — fine-tuning large language models cheaply leans on this same low-rank thinking.
 - **Image compression** — Topic 7.
 
+## 7b. WORKED EXAMPLES — study these before the drills
+
+---
+
+### Worked Example 1 — reading the dimensions of a truncated SVD
+
+> **Problem:** A matrix `A ∈ ℝ⁹ˣ⁴` (9 documents, 4 terms) is approximated at rank 3:
+> `A₃ = U₃Σ₃V₃ᵀ`. Give the dimensions of each factor, and say which factor lives in
+> document space and which in term space.
+
+**Step 1 — decode `ℝ⁹ˣ⁴`.** Always **rows × columns**:
+
+```
+m = 9 rows    = 9 documents
+n = 4 columns = 4 terms
+```
+
+**Step 2 — recall the full SVD shapes** for an `m × n` matrix:
+
+```
+A    =    U      Σ      Vᵀ
+9×4      9×9    9×4    4×4
+```
+
+- `U` is **m × m** — it's a basis for the **output** space (the rows, here documents)
+- `V` is **n × n** — it's a basis for the **input** space (the columns, here terms)
+
+**Step 3 — apply the truncation rule for `k = 3`.**
+
+> Keep the first **k columns** of U, the top **k singular values**, and the first **k rows**
+> of `Vᵀ`.
+
+```
+U₃  :  keep first 3 columns of the 9×9 U      →   9 × 3
+Σ₃  :  keep top 3 singular values             →   3 × 3
+V₃ᵀ :  keep first 3 rows of the 4×4 Vᵀ        →   3 × 4
+```
+
+**Step 4 — CHECK by multiplying the shapes.** Do this every time:
+
+```
+(9 × 3)(3 × 3)(3 × 4)
+    ↑___↑                inner dims match: 3 = 3  ✓
+        ↑___↑            inner dims match: 3 = 3  ✓
+ ↑_______________↑       result: 9 × 4  ✓  same as A
+```
+
+If it doesn't multiply back to A's shape, you've mixed up a dimension.
+
+**Step 5 — which space is which.**
+
+```
+U's columns have 9 entries  →  one per DOCUMENT  →  U is document space
+V's columns have 4 entries  →  one per TERM      →  V is term space
+```
+
+> **Answer:** `U₃` is 9×3, `Σ₃` is 3×3, `V₃ᵀ` is 3×4. **U (left singular vectors) = document
+> space; V (right singular vectors) = term space.**
+
+**Memory hook:** **V is the inpu*t* side (n = columns); U is the outp*u*t side (m = rows).**
+
+---
+
+### Worked Example 2 — computing a small SVD by hand
+
+> **Problem:** Find the SVD of `A = [[1, 0], [0, 0], [0, 2]]`.
+
+**Step 1 — note the shape and predict the factor sizes.** A is `3 × 2`:
+
+```
+U: 3×3        Σ: 3×2        Vᵀ: 2×2
+```
+
+**Step 2 — compute `AᵀA`.** (This is the key move: `V` comes from `AᵀA`.)
+
+`Aᵀ` is A with rows and columns flipped:
+
+```
+        ┌            ┐
+Aᵀ  =   │ 1   0   0  │        (2 × 3)
+        │ 0   0   2  │
+        └            ┘
+```
+
+```
+              ┌            ┐ ┌        ┐     ┌        ┐
+AᵀA     =     │ 1   0   0  │ │ 1   0  │  =  │ 1   0  │
+              │ 0   0   2  │ │ 0   0  │     │ 0   4  │
+              └            ┘ │ 0   2  │     └        ┘
+                             └        ┘
+```
+
+*(Row 1 · col 1 = `1·1 + 0·0 + 0·0 = 1`; row 2 · col 2 = `0·0 + 0·0 + 2·2 = 4`; the
+off-diagonals are 0.)*
+
+**Step 3 — eigenvalues of `AᵀA`.** It's already diagonal, so the eigenvalues are just the
+diagonal entries:
+
+```
+λ₁ = 4        λ₂ = 1
+```
+
+> Always list them **largest first** — singular values must be in descending order.
+
+**Step 4 — singular values are the SQUARE ROOTS.**
+
+```
+σ₁ = √4 = 2        σ₂ = √1 = 1
+```
+
+```
+        ┌        ┐
+Σ   =   │ 2   0  │       (3 × 2 — pad with a zero row to match A's shape)
+        │ 0   1  │
+        │ 0   0  │
+        └        ┘
+```
+
+**Step 5 — eigenvectors of `AᵀA` give V.** For a diagonal matrix the eigenvectors are the
+standard axes. Match each to its eigenvalue:
+
+```
+λ₁ = 4  sits in position (2,2)   →   v₁ = (0, 1)
+λ₂ = 1  sits in position (1,1)   →   v₂ = (1, 0)
+```
+
+```
+        ┌        ┐                    ┌        ┐
+V   =   │ 0   1  │            Vᵀ  =   │ 0   1  │
+        │ 1   0  │                    │ 1   0  │
+        └        ┘                    └        ┘
+```
+
+**Step 6 — get U from `uᵢ = Avᵢ / σᵢ`.**
+
+```
+u₁ = A v₁ / σ₁ = A(0,1) / 2
+
+     A(0,1):  row1 = (1)(0)+(0)(1) = 0
+              row2 = (0)(0)+(0)(1) = 0
+              row3 = (0)(0)+(2)(1) = 2       →  (0, 0, 2)
+
+     divide by σ₁ = 2   →   u₁ = (0, 0, 1)
+```
+
+```
+u₂ = A v₂ / σ₂ = A(1,0) / 1  =  (1, 0, 0) / 1  =  (1, 0, 0)
+```
+
+*(The third column of U is any unit vector orthogonal to these two — here `(0, 1, 0)` — to
+complete the basis.)*
+
+**Step 7 — check the singular values are non-negative and sorted.**
+
+```
+σ = (2, 1)   both ≥ 0  ✓   descending  ✓
+```
+
+**Step 8 — read off the rank.**
+
+> **rank(A) = the number of non-zero singular values = 2.**
+
+> **Answer:** `σ = (2, 1)`, `V = [[0,1],[1,0]]`, `u₁ = (0,0,1)`, `u₂ = (1,0,0)`, rank 2.
+
+**The recipe, condensed:**
+
+```
+1. AᵀA
+2. its eigenvalues λᵢ  and eigenvectors  →  eigenvectors are V's columns
+3. σᵢ = √λᵢ, sorted largest first
+4. uᵢ = Avᵢ / σᵢ
+5. normalise everything
+```
+
+---
+
+### Worked Example 3 — the sign-flip question
+
+> **Problem:** Two students compute the SVD of the same matrix. Student A gets
+> `u₂ = (0.6, −0.8)` and `v₂ = (1, 0)`. Student B gets `u₂ = (−0.6, 0.8)` and `v₂ = (−1, 0)`.
+> Has someone made an error?
+
+**Step 1 — see what changed.** Student B's `u₂` and `v₂` are both Student A's, **negated**.
+
+**Step 2 — check what the reconstruction uses.** Each component contributes `σᵢ uᵢ vᵢᵀ`:
+
+```
+Student A:  σ₂ · ( u₂ )( v₂ )ᵀ
+Student B:  σ₂ · (−u₂ )(−v₂ )ᵀ  =  σ₂ · (−1)(−1) · u₂ v₂ᵀ  =  σ₂ · u₂ v₂ᵀ
+```
+
+**The two minus signs multiply to `+1`.** The contribution is **identical**.
+
+**Step 3 — conclude.**
+
+> **No error.** Singular vectors are unique only **up to sign**: flipping `uᵢ` and `vᵢ`
+> **together** leaves the reconstruction bit-for-bit unchanged. Different software (or the
+> same software on different runs) may legitimately return either version.
+>
+> **Practical consequence:** never interpret *which side of zero* a point falls on. Only the
+> **grouping** of points carries meaning.
+
+> ⚠ The signs must flip **as a pair**. Flipping only `uᵢ` would change the answer and *would*
+> be an error.
+
+---
+
+### What to notice across all three
+
+- **Shapes first, always.** `m×n` → `U` is m×m, `V` is n×n, and truncation keeps k of each.
+  Multiply the shapes back to check.
+- **U = output/rows. V = input/columns.** For documents × terms: U = documents, V = terms.
+- **V from `AᵀA`, `σ = √λ`, then `u = Av/σ`.**
+- **Sign flips in pairs are meaningless**, not mistakes.
+
+Now do the drills.
+
+
 ## 8. Drills
 
 **D1.** `C ∈ ℝ⁶ˣ¹⁰`, rank-2 approximation `C₂ = U₂Σ₂V₂ᵀ`.

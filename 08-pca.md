@@ -185,6 +185,288 @@ word.)*
 >
 > **Find the structure. Keep the best part. Use it.**
 
+## 8b. WORKED EXAMPLES — study these before the drills
+
+---
+
+### Worked Example 1 — complete PCA by hand, all six steps
+
+> **Problem:** Four data points as rows of `X`:
+> `(2,2), (4,6), (6,4), (8,8)`.
+> Find the mean, `Xc`, `XcᵀXc`, its eigenvalues and eigenvectors, PC1, the variance
+> explained, and the score of each point on PC1.
+
+**Step 1 — compute the mean of each COLUMN.**
+
+Stack the data and average down each column separately:
+
+```
+        x     y
+      ┌         ┐
+      │  2   2  │
+X  =  │  4   6  │
+      │  6   4  │
+      │  8   8  │
+      └         ┘
+
+x-mean = (2 + 4 + 6 + 8)/4 = 20/4 = 5
+y-mean = (2 + 6 + 4 + 8)/4 = 20/4 = 5
+
+mean = (5, 5)
+```
+
+> **Columns, not rows.** You're finding the average of each *feature*.
+
+**Step 2 — center: subtract the mean from every row.**
+
+```
+row 1:  (2−5, 2−5) = (−3, −3)
+row 2:  (4−5, 6−5) = (−1,  1)
+row 3:  (6−5, 4−5) = ( 1, −1)
+row 4:  (8−5, 8−5) = ( 3,  3)
+
+        ┌           ┐
+Xc  =   │ −3    −3  │
+        │ −1     1  │
+        │  1    −1  │
+        │  3     3  │
+        └           ┘
+```
+
+**Step 3 — CHECK: every column must now sum to zero.**
+
+```
+column 1:  −3 − 1 + 1 + 3 = 0   ✓
+column 2:  −3 + 1 − 1 + 3 = 0   ✓
+```
+
+> If a column doesn't sum to zero, your mean or your subtraction is wrong. **Do this check
+> every time** — it catches the error before it poisons everything downstream.
+
+**Step 4 — compute `XcᵀXc`.** For 2 columns it always has this shape:
+
+```
+            ┌                 ┐
+XcᵀXc  =    │  Σx²      Σxy   │
+            │  Σxy      Σy²   │
+            └                 ┘
+```
+
+where the sums run down the **centered** columns. Work them out one at a time:
+
+```
+Σx²  = (−3)² + (−1)² + (1)² + (3)²  =  9 + 1 + 1 + 9  =  20
+
+Σy²  = (−3)² + ( 1)² + (−1)² + (3)² =  9 + 1 + 1 + 9  =  20
+
+Σxy  = (−3)(−3) + (−1)(1) + (1)(−1) + (3)(3)
+     =    9     +   (−1)  +  (−1)   +   9
+     =  16
+```
+
+```
+            ┌            ┐
+XcᵀXc  =    │  20    16  │
+            │  16    20  │
+            └            ┘
+```
+
+**Step 5 — eigenvalues.** Use the Topic 4 shortcut `λ² − tr·λ + det = 0`:
+
+```
+tr  = 20 + 20 = 40
+det = (20)(20) − (16)(16) = 400 − 256 = 144
+
+λ² − 40λ + 144 = 0
+```
+
+Two numbers multiplying to 144 and adding to 40: **36 and 4**.
+
+```
+(λ − 36)(λ − 4) = 0   →   λ₁ = 36,  λ₂ = 4
+```
+
+> **Handy shortcut for this shape:** whenever the matrix looks like `[[a, b], [b, a]]`, the
+> eigenvalues are simply `a + b` and `a − b`. Here `20 + 16 = 36` and `20 − 16 = 4` ✓ — and
+> the eigenvectors are **always** `(1,1)` and `(1,−1)`. This shape appears constantly in PCA
+> questions.
+
+**Step 6 — eigenvectors.**
+
+```
+λ = 36:   XcᵀXc − 36I = [ −16   16 ]   →  −16v₁ + 16v₂ = 0  →  v₂ = v₁   →  (1, 1)
+                        [  16  −16 ]
+
+λ = 4:    XcᵀXc −  4I = [  16   16 ]   →   16v₁ + 16v₂ = 0  →  v₂ = −v₁  →  (1, −1)
+                        [  16   16 ]
+```
+
+Check they're orthogonal: `(1,1)·(1,−1) = 1 − 1 = 0` ✓ (guaranteed — `XcᵀXc` is symmetric).
+
+**Step 7 — PC1 is the eigenvector with the LARGER eigenvalue.**
+
+```
+λ₁ = 36 is larger   →   PC1 = (1, 1)
+```
+
+As a **unit** vector (divide by `‖(1,1)‖ = √2`):
+
+```
+PC1 = (1/√2, 1/√2) ≈ (0.707, 0.707)
+```
+
+**Step 8 — interpret. Do not skip this.**
+
+> Plotting `(2,2), (4,6), (6,4), (8,8)` shows the points running from bottom-left to
+> top-right along the 45° diagonal, with the middle two sitting slightly off it. The
+> direction of greatest spread is clearly `(1,1)` — **PC1 matches the data.**
+
+**Step 9 — variance explained = each eigenvalue ÷ the total.**
+
+```
+total = 36 + 4 = 40
+
+PC1:  36/40 = 0.90  →  90%
+PC2:   4/40 = 0.10  →  10%
+```
+
+**Step 10 — scores: project each centered point onto PC1.**
+
+> **score = (centered point) · (unit PC1)**
+
+Since PC1 `= (1/√2)(1,1)`, the dot product is just `(x + y)/√2`:
+
+```
+(−3, −3)  →  (−3 + −3)/√2 = −6/√2 = −3√2 ≈ −4.243
+(−1,  1)  →  (−1 +  1)/√2 =  0/√2 =   0
+( 1, −1)  →  ( 1 + −1)/√2 =  0/√2 =   0
+( 3,  3)  →  ( 3 +  3)/√2 =  6/√2 =  3√2 ≈  4.243
+```
+
+**Step 11 — interpret the scores.**
+
+> Each 2-D point is now a single number giving its position along the direction of greatest
+> spread, and that one number retains **90%** of the total variation.
+>
+> Notice points 2 and 3 both score **0**: PC1 cannot distinguish them at all, because they
+> differ **only** along PC2 — the direction carrying the other 10%.
+
+> **Answers:** mean `(5,5)`; `XcᵀXc = [[20,16],[16,20]]`; `λ = 36, 4`; eigenvectors `(1,1)`,
+> `(1,−1)`; `PC1 = (1,1)/√2`; variance 90% / 10%; scores `−3√2, 0, 0, 3√2`.
+
+---
+
+### Worked Example 2 — the covariance-matrix route
+
+> **Problem:** Using the same data, compute `Σcov = (1/n) XcᵀXc` and explain how its
+> eigenvectors and eigenvalues relate to those found above.
+
+**Step 1 — divide by n = 4.**
+
+```
+              1   ┌            ┐      ┌          ┐
+Σcov   =     ───  │  20    16  │  =   │  5     4 │
+              4   │  16    20  │      │  4     5 │
+                  └            ┘      └          ┘
+```
+
+**Step 2 — its eigenvalues.** Using the `[[a,b],[b,a]]` shortcut: `5 + 4 = 9` and `5 − 4 = 1`.
+
+```
+λ = 9  and  λ = 1
+```
+
+**Step 3 — compare with Step 5 above.**
+
+```
+before (XcᵀXc):   36  and  4
+now   (Σcov):      9  and  1
+
+36/4 = 9        4/4 = 1        →  every eigenvalue divided by n = 4
+```
+
+**Step 4 — the eigenvectors.**
+
+```
+still (1, 1) and (1, −1)   —   UNCHANGED
+```
+
+**Step 5 — why.** If `Mv = λv`, then `(cM)v = c(Mv) = (cλ)v`.
+
+> **Multiplying a matrix by a constant leaves its eigenvectors untouched and multiplies
+> every eigenvalue by that constant.**
+
+**Step 6 — and the proportions?**
+
+```
+9 / (9 + 1) = 90%          1 / (9 + 1) = 10%
+```
+
+> **Identical to before.** The constant cancels in the ratio.
+
+> **Answer:** the principal component directions are **exactly the same**; the eigenvalues
+> are each **divided by n**; the **variance-explained proportions are unchanged**. This is
+> why the covariance route and the SVD route give the same PCA.
+>
+> *(Note: your lecture slides use `1/(n−1)` while Assignment Q9 writes `1/n`. The argument
+> is identical either way and the proportions are unaffected — just state which you used.)*
+
+---
+
+### Worked Example 3 — why centering (and sometimes standardising) matters
+
+> **Problem:** A dataset has `income` in dollars (values around 50,000) and `age` in years
+> (values around 40). What goes wrong if you run PCA after centering only?
+
+**Step 1 — what centering achieves.** It makes each column have mean 0, so variance measures
+**spread around the mean** rather than distance from the origin. Without it, PC1 would point
+at where the data sits, not at how it varies. **Centering is mandatory.**
+
+**Step 2 — what centering does NOT fix.** Look at typical *spreads* after centering:
+
+```
+income deviations:   ±10,000      squared:  ~100,000,000
+age deviations:      ±10          squared:  ~100
+```
+
+**Step 3 — see the consequence.** PCA maximises variance, and income's variance is about a
+**million times larger** — purely because dollars are small units and there are many of them.
+
+> PC1 will point almost exactly along the income axis, and will tell you nothing except
+> "income has big numbers in it." Age is drowned out for reasons of **units**, not
+> importance.
+
+**Step 4 — the fix: standardise.**
+
+> **Center, then divide each column by its standard deviation.** Every feature then has
+> variance 1, and PCA compares their *patterns of variation* rather than their *unit sizes*.
+
+**Step 5 — when each is appropriate.**
+
+> - Features already in the **same units** on a comparable scale (e.g. the four Iris
+>   measurements, all in cm) → centering alone is fine.
+> - Features in **different units** (dollars vs years vs counts) → **standardise**.
+
+---
+
+### What to notice across all three
+
+The PCA procedure never changes:
+
+```
+1. mean of each COLUMN
+2. subtract it  →  Xc        (CHECK: columns sum to 0)
+3. XcᵀXc = [[Σx², Σxy], [Σxy, Σy²]]
+4. eigenvalues via λ² − tr·λ + det = 0     (shortcut: [[a,b],[b,a]] → a±b)
+5. PC1 = eigenvector of the LARGEST eigenvalue, made unit length
+6. variance explained = λᵢ / Σλ
+7. scores = (centered point) · (unit PC)
+8. SAY WHAT IT MEANS
+```
+
+Now do the drills.
+
+
 ## 9. Drills
 
 **D1.** Full Assignment Q9 from scratch on paper, all six parts, without looking.

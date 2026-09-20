@@ -204,6 +204,238 @@ question.
 | Orthonormal basis | a basis that is orthogonal **and** every vector has length 1 |
 | Gram–Schmidt | builds an orthonormal basis from any set of vectors (named, not derived) |
 
+## 7b. WORKED EXAMPLES — study these before the drills
+
+---
+
+### Worked Example 1 — dot product, cosine similarity, and reading the sign
+
+> **Problem:** `u = (2, 4)`, `w = (3, −1)`. Compute `u·w`, the cosine similarity and the
+> angle. What does the sign say? Are they exactly opposite? What happens if `u` becomes `5u`?
+
+**Step 1 — the dot product: multiply matching entries, then add.**
+
+```
+u = (2, 4)
+w = (3, −1)
+
+first entries:   2 ×  3  =  6
+second entries:  4 × (−1) = −4
+                          ──────
+u · w =                      2
+```
+
+> The result is a **single number**, not a vector. That's the whole point of a dot product.
+
+**Step 2 — compute both lengths.**
+
+```
+‖u‖ = √(2² + 4²)     = √(4 + 16) = √20 ≈ 4.472
+‖w‖ = √(3² + (−1)²)  = √(9 + 1)  = √10 ≈ 3.162
+```
+
+**Step 3 — cosine similarity = dot product ÷ (product of lengths).**
+
+```
+cos θ = (u·w) / (‖u‖·‖w‖)
+      = 2 / (√20 · √10)
+      = 2 / √200
+      = 2 / 14.142
+      ≈ 0.141
+```
+
+> Tip: `√20 · √10 = √200`. Multiplying under one root is easier than multiplying two
+> decimals.
+
+**Step 4 — the angle.**
+
+```
+θ = arccos(0.141) ≈ 81.9°
+```
+
+**Step 5 — sanity-check the sign before trusting the calculator.**
+
+| `cos θ` | angle must be |
+|---|---|
+| > 0 | between 0° and 90° |
+| = 0 | exactly 90° |
+| < 0 | between 90° and 180° |
+
+`cos θ ≈ +0.141` is positive → the angle must be **under 90°**. We got 81.9° ✓ Consistent.
+
+**Step 6 — what the sign tells you.**
+
+> The dot product is **positive**, so the angle is **less than 90°** (acute) — the two
+> vectors broadly point the same way.
+
+**Step 7 — are they exactly opposite?**
+
+> **No.** Exactly opposite requires `cos θ = −1` (θ = 180°). Here `cos θ ≈ +0.141`, so they
+> aren't even obtuse, let alone opposite.
+
+**Step 8 — replace `u` with `5u = (10, 20)`.**
+
+```
+raw dot product:  (5u)·w = 5(u·w) = 5 × 2 = 10     ← scaled by 5
+
+cosine:  ‖5u‖ = 5‖u‖, so
+         cos θ = 5(u·w) / (5‖u‖·‖w‖)
+                 the 5s cancel
+               ≈ 0.141                              ← UNCHANGED
+```
+
+> **Answer:** raw dot product scales by 5 → 10; cosine similarity is unchanged at ≈0.141,
+> because the factor appears in the numerator and in `‖5u‖ = 5‖u‖` and cancels. This is
+> exactly why recommender systems use cosine rather than the raw dot product — otherwise a
+> user who rates everything 5/5 would score highly against everyone.
+
+---
+
+### Worked Example 2 — the negative-dot-product trap
+
+> **Problem:** `u = (1, 2)`, `w = (−4, 1)`. Compute `u·w`. Does this mean they point in
+> exactly opposite directions?
+
+**Step 1 — dot product.**
+
+```
+1 × (−4) = −4
+2 ×   1  =  2
+         ──────
+u · w   =  −2
+```
+
+**Step 2 — cosine.**
+
+```
+‖u‖ = √(1 + 4)  = √5  ≈ 2.236
+‖w‖ = √(16 + 1) = √17 ≈ 4.123
+
+cos θ = −2 / (√5 · √17) = −2/√85 = −2/9.220 ≈ −0.217
+```
+
+**Step 3 — the angle.**
+
+```
+θ = arccos(−0.217) ≈ 102.5°
+```
+
+**Step 4 — answer the question carefully.**
+
+> **No, they are not exactly opposite.** A negative dot product only tells you the angle is
+> **greater than 90°** — an entire *range* from 90° to 180°. Here θ ≈ 102.5°, barely past
+> perpendicular.
+>
+> "Exactly opposite" means θ = 180°, which requires `cos θ = −1` exactly. We have −0.217.
+> **90° is a boundary, not a landmark to compare against.**
+
+> ⚠ A quarter of wrong diagnostic answers picked "exactly opposite" here. This is on the
+> instructor's self-check list.
+
+---
+
+### Worked Example 3 — projection onto a line, with the check
+
+> **Problem:** `a = (2, 1)`, `b = (3, 4)`. Find the scalar coefficient, the projection, the
+> residual, and verify orthogonality.
+
+**Step 1 — know the goal.** You want the point on the line through `a` that sits closest to
+`b`. That point must look like `c·a` for some number `c` — so the job is to find `c`.
+
+**Step 2 — know where the formula comes from.** The residual must be **perpendicular** to
+`a`, otherwise you could slide along the line and get closer:
+
+```
+(b − c·a) · a = 0
+ b·a − c(a·a) = 0
+            c = (a·b)/(a·a)
+```
+
+**Step 3 — compute the two dot products.**
+
+```
+a · b = (2)(3) + (1)(4) = 6 + 4 = 10
+a · a = (2)(2) + (1)(1) = 4 + 1 =  5
+```
+
+> `a·a` is always the vector dotted with **itself** — never with `b`. Getting these two
+> confused is the most common error here.
+
+**Step 4 — the coefficient.**
+
+```
+c = 10 / 5 = 2
+```
+
+**Step 5 — the projection: multiply `a` by `c`.**
+
+```
+projₐ(b) = 2 · (2, 1) = (4, 2)
+```
+
+**Step 6 — the residual: subtract the projection from `b`.**
+
+```
+r = b − projₐ(b) = (3, 4) − (4, 2) = (−1, 2)
+```
+
+> Order matters: it's `b` minus the projection, not the other way round.
+
+**Step 7 — VERIFY. Never skip this.**
+
+```
+r · a = (−1)(2) + (2)(1) = −2 + 2 = 0   ✓
+```
+
+Zero means the residual really is perpendicular to `a`, which confirms the whole
+calculation in five seconds.
+
+> **Answer:** `c = 2`, `projₐ(b) = (4, 2)`, `r = (−1, 2)`, and `r·a = 0` ✓
+
+**Step 8 — the geometric explanation (worth marks).**
+
+> Take any other point `p` on the line. Then `b`, the projection, and `p` form a **right
+> triangle**, with the right angle at the projection and the segment from `b` to `p` as the
+> **hypotenuse**. The hypotenuse is always the longest side, so `p` is strictly farther from
+> `b` than the projection is. Since `p` was arbitrary, the projection is the closest point.
+
+---
+
+### Worked Example 4 — testing orthogonality
+
+> **Problem:** Are `u = (3, 6)` and `w = (4, −2)` orthogonal?
+
+**Step 1 — know the test.** Two vectors are orthogonal exactly when their dot product is
+**zero**. No angles, no lengths needed.
+
+**Step 2 — compute.**
+
+```
+3 ×   4  =  12
+6 × (−2) = −12
+          ─────
+             0
+```
+
+**Step 3 — conclude.**
+
+> `u·w = 0`, so **yes, `u` and `w` are orthogonal** — perpendicular, carrying no overlapping
+> information.
+
+*(Counter-check: `(3,6)` and `(4,1)` give `12 + 6 = 18 ≠ 0` → not orthogonal.)*
+
+---
+
+### What to notice across all four
+
+- Dot product → a **number**. It answers "how much do these two agree?"
+- **Zero** → perpendicular. **Positive** → under 90°. **Negative** → over 90° (a *range*).
+- Cosine divides out length, so it compares **direction only**.
+- Projection is three steps — `c`, then `c·a`, then `b −` that — **and always verify `r·a = 0`.**
+
+Now do the drills.
+
+
 ## 8. Drills
 
 **D1.** `u = (1,3)`, `w = (2,−1)`. (a) `u·w`. (b) cosine similarity. (c) What does the
