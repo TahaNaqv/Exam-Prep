@@ -370,8 +370,45 @@ u₁ = A v₁ / σ₁ = A(0,1) / 2
 u₂ = A v₂ / σ₂ = A(1,0) / 1  =  (1, 0, 0) / 1  =  (1, 0, 0)
 ```
 
-*(The third column of U is any unit vector orthogonal to these two — here `(0, 1, 0)` — to
-complete the basis.)*
+**Step 6b — U must be 3×3, so find the remaining column.**
+
+The formula `uᵢ = Avᵢ/σᵢ` only works for **non-zero** `σᵢ`, and there are only
+`rank(A) = 2` of those. But `U` has to be **m × m = 3 × 3** — a complete orthonormal basis
+for the 3-dimensional output space. So one column is still missing.
+
+Fill it with **any unit vector orthogonal to the ones you already have.** We have
+`u₁ = (0,0,1)` and `u₂ = (1,0,0)`; the obvious remaining axis is:
+
+```
+u₃ = (0, 1, 0)
+```
+
+Check: `u₃·u₁ = 0` ✓, `u₃·u₂ = 0` ✓, `‖u₃‖ = 1` ✓
+
+**Assemble U by putting u₁, u₂, u₃ in as COLUMNS:**
+
+```
+        ┌               ┐
+U   =   │  0    1    0  │        column 1 = u₁ = (0,0,1)
+        │  0    0    1  │        column 2 = u₂ = (1,0,0)
+        │  1    0    0  │        column 3 = u₃ = (0,1,0)
+        └               ┘
+```
+
+> **Why the extra column doesn't change anything.** `Σ` is 3×2 with a **zero bottom row**,
+> so when you multiply `UΣ`, the third column of U is multiplied by zeros throughout — it
+> contributes nothing to the reconstruction. It exists only so that U is square and
+> orthogonal, as the definition of a full SVD requires.
+>
+> **In general:** `rank(A)` columns of U come from the formula; the remaining `m − rank(A)`
+> are free choices completing the orthonormal basis. This is also why the **truncated** SVD
+> `Uₖ` (m × k) never needs them — it keeps only the first k columns anyway.
+
+**Verify the whole thing:**
+
+```
+U Σ Vᵀ  =  [[1,0],[0,0],[0,2]]  =  A   ✓
+```
 
 **Step 7 — check the singular values are non-negative and sorted.**
 
@@ -383,7 +420,19 @@ complete the basis.)*
 
 > **rank(A) = the number of non-zero singular values = 2.**
 
-> **Answer:** `σ = (2, 1)`, `V = [[0,1],[1,0]]`, `u₁ = (0,0,1)`, `u₂ = (1,0,0)`, rank 2.
+> **Answer:** `σ = (2, 1)`; `rank(A) = 2`; and the three factors, with the shapes predicted
+> in Step 1:
+>
+> ```
+>       ┌               ┐         ┌        ┐          ┌        ┐
+> U =   │  0    1    0  │   Σ =   │ 2   0  │    Vᵀ =  │ 0   1  │
+>       │  0    0    1  │         │ 0   1  │          │ 1   0  │
+>       │  1    0    0  │         │ 0   0  │          └        ┘
+>       └               ┘         └        ┘
+>          (3 × 3)                 (3 × 2)             (2 × 2)
+> ```
+>
+> Check the shapes multiply back: `(3×3)(3×2)(2×2) → 3×2` ✓ — matching A.
 
 **The recipe, condensed:**
 
