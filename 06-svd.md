@@ -254,13 +254,98 @@ diagonal entries:
         └        ┘
 ```
 
-**Step 5 — eigenvectors of `AᵀA` give V.** For a diagonal matrix the eigenvectors are the
-standard axes. Match each to its eigenvalue:
+**Step 5 — eigenvectors of `AᵀA` give V.** Use the ordinary Topic 4 recipe: for each λ,
+solve `(AᵀA − λI)v = 0`. Writing `M = AᵀA`:
+
+*For λ = 4* — subtract 4 from each diagonal entry:
 
 ```
-λ₁ = 4  sits in position (2,2)   →   v₁ = (0, 1)
-λ₂ = 1  sits in position (1,1)   →   v₂ = (1, 0)
+            ┌                ┐     ┌            ┐
+M − 4I  =   │ 1−4      0     │  =  │ −3     0   │
+            │  0      4−4    │     │  0     0   │
+            └                ┘     └            ┘
+
+Row 1:  −3v₁ + 0·v₂ = 0   →   v₁ = 0
+Row 2:   0·v₁ + 0·v₂ = 0   →   0 = 0, no information  →  v₂ is FREE
 ```
+
+Take `v₂ = 1`  →  **`v = (0, 1)`**.  Check: `M(0,1) = (0, 4) = 4·(0,1)` ✓
+
+*For λ = 1* — subtract 1 from each diagonal entry:
+
+```
+            ┌                ┐     ┌            ┐
+M − 1I  =   │ 1−1      0     │  =  │  0     0   │
+            │  0      4−1    │     │  0     3   │
+            └                ┘     └            ┘
+
+Row 1:   0 = 0, no information  →  v₁ is FREE
+Row 2:  3v₂ = 0   →   v₂ = 0
+```
+
+Take `v₁ = 1`  →  **`v = (1, 0)`**.  Check: `M(1,0) = (1, 0) = 1·(1,0)` ✓
+
+**The shortcut you can use next time.** A diagonal matrix scales each axis independently and
+does nothing else:
+
+```
+┌        ┐ ┌   ┐     ┌      ┐
+│ 1   0  │ │ x │  =  │ 1x   │      x-direction stretched by 1
+│ 0   4  │ │ y │     │ 4y   │      y-direction stretched by 4
+└        ┘ └   ┘     └      ┘
+```
+
+> **For a diagonal matrix, the eigenvalues ARE the diagonal entries, and each one's
+> eigenvector is the coordinate axis it sits on:**
+> - the **first** diagonal entry goes with the x-axis, `(1, 0)`
+> - the **second** diagonal entry goes with the y-axis, `(0, 1)`
+
+**Why, in pictures.** Watch three arrows pass through `M = [[1,0],[0,4]]`:
+
+```
+(1, 0) ──M──▶ (1, 0)     along the x-axis: same direction, ×1   →  EIGENVECTOR, λ=1
+(0, 1) ──M──▶ (0, 4)     along the y-axis: same direction, ×4   →  EIGENVECTOR, λ=4
+(1, 1) ──M──▶ (1, 4)     diagonal: 45° becomes 76°  — ROTATED   →  NOT an eigenvector
+```
+
+`(1,0)` lives *entirely* in the x-direction and M only scales x, so nothing else can happen
+to it. `(1,1)` has a foot in both directions, and they're scaled by **different** amounts
+(x by 1, y by 4) — so the arrow tips upward. That tipping is rotation, which disqualifies it.
+
+**The one-line proof**, for any `M = [[d₁,0],[0,d₂]]`:
+
+```
+M(1,0) = (d₁·1 + 0·0,  0·1 + d₂·0) = (d₁, 0) = d₁·(1,0)   ✓  λ = d₁
+M(0,1) = (d₁·0 + 0·1,  0·0 + d₂·1) = (0, d₂) = d₂·(0,1)   ✓  λ = d₂
+```
+
+`Mv = λv` straight from the definition — nothing to solve.
+
+**⚠ Now the labelling, which looks backwards but isn't:**
+
+```
+λ₁ = 4  (the LARGEST)  →  v₁ = (0, 1)   ← the SECOND axis
+λ₂ = 1                 →  v₂ = (1, 0)   ← the FIRST axis
+```
+
+Two different numbering schemes are colliding:
+
+| Subscript on | Means |
+|---|---|
+| `λ₁`, `σ₁`, `v₁` | **rank order** — largest first, because SVD requires `σ₁ ≥ σ₂ ≥ ⋯` |
+| position (1,1), (2,2) | **location** in the matrix |
+
+So `4` is the largest eigenvalue → it is labelled `λ₁` → its eigenvector is `v₁`. And `4`
+happens to sit at position (2,2) → so it pairs with the **second** axis, `(0,1)`. Hence
+`v₁ = (0,1)`.
+
+**The eigenvector of the biggest eigenvalue is always `v₁`, wherever that eigenvalue sat in
+the matrix.** If `AᵀA` had been `[[4,0],[0,1]]`, you'd get `v₁ = (1,0)` and `v₂ = (0,1)` —
+same method, subscripts merely lining up with positions by coincidence.
+
+*Why sorting matters at all:* truncation keeps "the first k" singular values. Without the
+descending order, "the first 2" would keep an arbitrary pair rather than the two most
+important — and the whole of Topic 7 depends on that.
 
 ```
         ┌        ┐                    ┌        ┐
