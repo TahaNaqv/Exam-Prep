@@ -58,6 +58,37 @@ A matrix can have several eigenvector directions, each with its own eigenvalue.
 An eigenvector is only defined **up to scale** — if `v` works, so does `2v` or `−v`. So
 "find *an* eigenvector" means pick any convenient one; small whole numbers are fine.
 
+## 3b. Where the recipe comes from (so it isn't a rule from nowhere)
+
+You want a `v` the matrix only stretches: `Av = λv`. Move everything to one side:
+
+```
+Av − λv = 0
+```
+
+You'd like to factor out `v`, but `(A − λ)` is meaningless — `A` is a matrix, `λ` is a
+number, and you can't subtract a number from a matrix. So insert the **identity matrix**
+`I`, which changes nothing (`Iv = v`):
+
+```
+Av − λIv = 0        →        (A − λI)v = 0
+```
+
+Read that last line literally: **the matrix `(A − λI)` sends `v` to zero.**
+
+Now the key move. If `(A − λI)` were **invertible**, the only vector it could send to zero
+would be `v = 0` — useless, because the zero vector is never an eigenvector. So for a
+genuine eigenvector to exist, `(A − λI)` must be **not invertible** — singular — and from §2
+that means exactly:
+
+```
+det(A − λI) = 0
+```
+
+> **That's the characteristic equation.** It is the condition that makes a non-zero `v`
+> possible. And it also explains why, once you plug a correct λ back in, the two rows of
+> `(A − λI)` always come out **redundant**: zero determinant *means* the rows are dependent.
+
 ## 4. The recipe (memorise this — it is the same every single time)
 
 **Step 1.** Build the characteristic equation: `det(A − λI) = 0`
@@ -77,6 +108,10 @@ row, pick a convenient value for one entry, read off the other.)
 **Step 4.** Verify: check `Av = λv` by direct multiplication.
 
 ## 5. Worked example — `B = [[4,1],[2,3]]`
+
+*(This is Assignment Q5's matrix. A slower, fully-expanded version of every step — including
+the bracket expansion and the `B − λI` subtraction done entry by entry — is §8b Worked
+Example 1. If any line below moves too fast, go there.)*
 
 **Trace and determinant:** `tr = 7`, `det = 10`.
 
