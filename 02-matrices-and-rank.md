@@ -426,12 +426,139 @@ matrix, so depth would buy nothing. The nonlinearity is the entire reason depth 
 
 ---
 
-### What to notice across all four
+### Worked Example 5 — rank in REAL data (multicollinearity)
+
+Same idea as Examples 2 and 3, but the matrix arrives as a **dataset** instead of a grid of
+abstract numbers. The method is identical — only the packaging changed.
+
+> **Problem:** A dataset records `exam_math`, `exam_physics`, and `total_score`, where
+> `total_score = exam_math + exam_physics`. What is the rank of this 3-column matrix at most,
+> what is the problem called, and why does it matter?
+
+**Step 1 — recognise that a dataset IS a matrix.** Rows = students, columns = features:
+
+```
+            math    physics    total
+         ┌                             ┐
+stu 1    │  40        30        70     │
+stu 2    │  55        25        80     │
+stu 3    │  60        35        95     │
+         └                             ┘
+```
+
+**Step 2 — write out the columns.** Read **downwards**, as always:
+
+```
+c₁ = (40, 55, 60)      ← math
+c₂ = (30, 25, 35)      ← physics
+c₃ = (70, 80, 95)      ← total
+```
+
+**Step 3 — test for a dependence relation.** With three columns, look for one being built
+from the others (not just a multiple of one):
+
+```
+c₁ + c₂ = (40+30, 55+25, 60+35) = (70, 80, 95)  =  c₃   ✓
+```
+
+```
+c₃ = c₁ + c₂       →   DEPENDENT
+```
+
+> This is the definition straight from §5: *a set is linearly dependent exactly when one
+> vector can be written as a linear combination of the others.* Here the coefficients are
+> just 1 and 1.
+
+**Step 4 — count the rank.**
+
+```
+c₁  →  genuinely new                       ✓ counts
+c₂  →  genuinely new (not a multiple of c₁) ✓ counts
+c₃  →  entirely built from c₁ and c₂        ✗ adds nothing
+```
+
+```
+rank = 2      (despite there being 3 columns)
+```
+
+**Step 5 — why "at most".** We can prove `c₃` is redundant from the *definition* of
+`total_score`, whatever the numbers happen to be. We cannot prove `c₁` and `c₂` are
+independent without checking the actual data — if every student happened to score the same
+in both subjects, the rank would fall to 1.
+
+> **"At most 2"** is the claim you can defend: we know for certain that **at least one**
+> column is redundant.
+
+**Step 6 — name the problem.**
+
+> **Multicollinearity** — the real-data name for rank deficiency in a feature matrix.
+
+**Step 7 — why it matters. Make the failure concrete.**
+
+Fit a model using all three columns:
+
+```
+prediction = w₁·math + w₂·physics + w₃·total
+```
+
+Substitute `total = math + physics`:
+
+```
+= w₁·math + w₂·physics + w₃·(math + physics)
+= (w₁ + w₃)·math  +  (w₂ + w₃)·physics
+```
+
+**Only the sums `(w₁ + w₃)` and `(w₂ + w₃)` affect the prediction.** So:
+
+| `w₁` | `w₂` | `w₃` | `w₁+w₃` | `w₂+w₃` | prediction |
+|---|---|---|---|---|---|
+| 2 | 3 | 0 | 2 | 3 | identical |
+| 0 | 1 | 2 | 2 | 3 | identical |
+| 5 | 6 | −3 | 2 | 3 | identical |
+| −8 | −7 | 10 | 2 | 3 | identical |
+
+> **All of these are equally good fits**, and there are infinitely many more. The data cannot
+> tell the model how to divide credit between `total` and its two ingredients. That is what
+> "**no unique solution**" means — not failure, but infinitely many tied answers, which makes
+> the individual coefficients meaningless.
+
+**Step 8 — state the chain (this is the marks-earning sentence).**
+
+```
+c₃ = c₁ + c₂
+      ↓
+X does not have full column rank
+      ↓
+XᵀX is singular — not invertible
+      ↓
+x̂ = (XᵀX)⁻¹Xᵀb  breaks:  no unique solution
+```
+
+> **Answer:** rank at most **2**; the problem is **multicollinearity**; it makes `XᵀX`
+> singular so the least-squares fit has no unique solution.
+
+**Step 9 — spot it in the wild.** The same trap, differently dressed:
+
+| Pattern | Example |
+|---|---|
+| A **total** of other columns | `total = math + physics` |
+| The **same quantity in two units** | `height_cm` and `height_m` (`c₂ = 0.01·c₁`) |
+| A **linear rescaling** | °C and °F (`F = 1.8C + 32`) |
+| **Percentages** summing to 100 | `%A + %B + %C = 100` |
+| **Dummy variable trap** | one-hot columns where the last = 1 − (sum of others) |
+
+Your instructor's Session 2 phrasing: *"a composite score column built from existing columns
+adds a column but zero rank."*
+
+
+### What to notice across all five
 
 - **Row picture** = read across, one row → one output entry.
 - **Column picture** = read down, `v`'s entries are the amounts of each column.
 - **Rank** = how many columns are genuinely independent. **Never about shape.**
 - **Full rank** and **full column rank** are different claims — check both separately.
+- A **dataset is just a matrix**; "multicollinearity" is only rank deficiency with a
+  real-world name on it.
 
 Now do the drills.
 
