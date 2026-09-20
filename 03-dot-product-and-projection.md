@@ -31,12 +31,82 @@ information**. It's the same word you already use in software ("orthogonal conce
 
 ### (Optional) Proof the two formulas agree — flagged as a possible bonus question
 
-Law of cosines:      `‖u−w‖² = ‖u‖² + ‖w‖² − 2‖u‖‖w‖cos θ`
-Algebraic expansion: `‖u−w‖² = (u−w)·(u−w) = ‖u‖² − 2(u·w) + ‖w‖²`
+**What is being proved.** The two formulas look unrelated — one multiplies coordinates, the
+other uses lengths and an angle. The proof shows they always produce the same number. This
+is what licenses `u·w = 0 ⟺ perpendicular`; without it, that's an unjustified leap.
 
-Set them equal, cancel `‖u‖² + ‖w‖²`, divide by `−2`:  **`u·w = ‖u‖‖w‖cos θ`** ∎
+**The strategy:** pick one quantity, compute it **two different ways**, and set the answers
+equal. The quantity chosen is `‖u − w‖²`, because `u`, `w` and `u − w` form a **triangle**
+(which lets geometry in), and `‖·‖²` is easy to expand algebraically.
 
-Four lines. Worth memorising — it's cheap insurance for a bonus mark.
+```
+        w
+        ●
+       /│
+      / │  ← u − w   (the side joining the two tips)
+     /  │
+    /θ  │
+   ●────●
+ origin  u
+```
+
+**Facts you need first:**
+- `‖v‖² = v·v` — because `v·v = v₁² + v₂² + ⋯` and `‖v‖ = √(v₁² + v₂² + ⋯)`; squaring the
+  norm removes the root.
+- The dot product **distributes** over addition, just like ordinary multiplication.
+- The dot product **commutes**: `u·w = w·u` (since `u₁w₁ + u₂w₂` reads the same either way).
+
+---
+
+**Line 1 — the geometric side: quote the law of cosines.**
+
+For any triangle with sides `a`, `b` and included angle `θ`, the third side satisfies
+`c² = a² + b² − 2ab·cos θ`. *(This is just Pythagoras plus a correction: at `θ = 90°`,
+`cos θ = 0` and it collapses to `c² = a² + b²`.)*
+
+With `a = ‖u‖`, `b = ‖w‖`, `c = ‖u−w‖`:
+
+```
+‖u − w‖² = ‖u‖² + ‖w‖² − 2‖u‖‖w‖cos θ                    ...(1)
+```
+
+**Line 2 — the algebraic side: expand the bracket.**
+
+```
+‖u − w‖² = (u − w)·(u − w)
+         = u·u − u·w − w·u + w·w        [distribute, like FOIL]
+         = ‖u‖² − 2(u·w) + ‖w‖²          [u·u = ‖u‖², and u·w = w·u]     ...(2)
+```
+
+**Line 3 — set (1) and (2) equal.** Both compute the same number, so:
+
+```
+‖u‖² + ‖w‖² − 2‖u‖‖w‖cos θ  =  ‖u‖² − 2(u·w) + ‖w‖²
+```
+
+**Line 4 — cancel `‖u‖²` and `‖w‖²` (they appear on both sides), then divide by −2.**
+
+```
+−2‖u‖‖w‖cos θ = −2(u·w)
+
+         u·w = ‖u‖‖w‖cos θ          ∎
+```
+
+---
+
+**Check it with numbers** (`u = (3,1)`, `w = (1,2)`, so `u − w = (2,−1)` and `‖u−w‖² = 5`):
+
+```
+Way 1:  ‖u‖² + ‖w‖² − 2‖u‖‖w‖cos θ  =  10 + 5 − 2(5)  =  5   ✓
+Way 2:  ‖u‖² − 2(u·w) + ‖w‖²        =  10 − 10 + 5    =  5   ✓
+```
+
+Both routes give 5 — the proof, in numbers.
+
+**Why memorise it:** you invent nothing. Quote the law of cosines, expand a bracket, cancel,
+divide. Four lines for a possible bonus mark. And the payoff is the fact you use constantly:
+`θ = 90° → cos θ = 0 → u·w = 0`, turning perpendicularity into pure arithmetic with no angle
+ever computed.
 
 ## 2. Cosine similarity
 
@@ -91,6 +161,56 @@ extra factor of 10 appears in the numerator and in `‖10u‖ = 10‖u‖` and c
 
 ## 4. Projection onto a line — derived, not memorised
 
+### First: what are these objects?
+
+**"The line through the origin in direction `a`" means every multiple of `a`.** With
+`a = (3,1)`:
+
+```
+c = 0  → (0,0)      c = 1 → (3,1)      c = 2 → (6,2)      c = −1 → (−3,−1)
+```
+
+All of those sit on one straight line through the origin. So:
+
+> **The line = the set of all points `c·a`, as `c` runs over every number.**
+
+**This is the key reframing:** every point on the line is `c·a` for some `c`, so the
+question "which point on the line?" is really **"which number `c`?"** An infinite search
+collapses to finding one number.
+
+**And `b` is a point off the line.** (Check for `b = (2,4)`: you'd need `3c = 2` → `c = 2/3`
+*and* `1c = 4` → `c = 4`. Contradiction, so `b` is not on the line.)
+
+```
+              ● b
+             ╱
+            ╱
+   ────────●────────────────→   the line (all multiples of a)
+           0
+```
+
+**The residual** is the arrow *from* your chosen point *to* `b`:  `r = b − c·a`. It's what's
+left over — the part of `b` the line couldn't account for — and **its length is your
+distance to `b`**. So the job is: choose `c` to make `r` as short as possible.
+
+### The real-world version
+
+You're standing in a field beside a straight road. **Where do you walk to reach the road
+fastest?** Straight at it, at a right angle — never diagonally. That instinct *is* this
+theorem.
+
+### Why perpendicular is the stopping condition
+
+If `r` leans instead of standing at a right angle, then part of it points **along the
+line** — and "along the line" is a direction you can actually move in. So slide that way
+and you get closer: you weren't at the closest point.
+
+The only time you **can't** improve is when `r` has no component along the line at all.
+
+> **Perpendicular isn't a formula to memorise — it's the signal that no improvement is left.**
+
+---
+
 **The question:** given a line through the origin in direction `a`, and a point `b` off
 the line, what's the closest point on the line to `b`?
 
@@ -118,6 +238,9 @@ Note `a·a = ‖a‖²`, so you'll also see it written `proj = ((a·b)/‖a‖²
 2. `a·a = 9 + 1 = 10`
 3. `c = 10/10 = **1**`
 4. `projₐ(b) = 1·(3,1) = **(3,1)**`
+   > ⚠ Here `c = 1`, so the projection happens to equal `a` itself. **That is a coincidence
+   > of these numbers, not a rule** — with `a = (2,1)`, `b = (3,4)` you get `c = 2` and a
+   > projection of `(4,2)`, nowhere near `a`.
 5. `r = b − proj = (2,4) − (3,1) = **(−1,3)**`
 6. **Check:** `r·a = (−1)(3) + (3)(1) = −3 + 3 = **0** ✓`
 
