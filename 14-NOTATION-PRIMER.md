@@ -160,6 +160,46 @@ first `Σ` is summation, the `σ`s are the values.
 
 ---
 
+## 7b. "Normalise" — used constantly, rarely defined
+
+> **Normalising a vector = scaling it so its length becomes exactly 1, without changing its
+> direction.  Method: divide the vector by its own length.**
+
+```
+normalised v  =  v / ‖v‖
+```
+
+**Worked, for `(1,1)`:**
+
+```
+step 1:  ‖(1,1)‖ = √(1² + 1²) = √2 ≈ 1.414
+step 2:  (1,1)/√2 = (1/√2, 1/√2) ≈ (0.7071, 0.7071)
+step 3:  check — √(0.7071² + 0.7071²) = √(0.5+0.5) = √1 = 1  ✓
+```
+
+**The notation `(1/√2)(1,1)`** is a scalar times a vector — multiply *each entry* by `1/√2`.
+It's written that way to stay exact and tidy. `1/√2 = √2/2 ≈ 0.7071` are all the same number.
+
+**Why it's needed:** eigenvectors are only defined **up to scale** — `(1,1)`, `(2,2)`,
+`(100,100)` are all valid answers for the same eigenvalue. Normalising picks one canonical
+representative.
+
+**Why it matters practically:** the projection coefficient is `c = (a·b)/(a·a)`. When `a` is
+normalised, `a·a = 1`, so `c = a·b` — the projection collapses to a **plain dot product**.
+That is exactly why a PCA score is written `score = (centered point) · (unit PC)` with no
+division.
+
+| Where | Why |
+|---|---|
+| Topic 5, `P⁻¹ = Pᵀ` | needs columns orthogonal **AND** unit length — orthogonal alone fails |
+| Topic 6, SVD | `U` and `V` must be **orthonormal** |
+| Topic 8, PCA | so scores are a plain dot product and percentages come out right |
+
+> **orthogonal** = perpendicular.  **orthonormal** = perpendicular **and** length 1.
+> The "normal" in *orthonormal* is this same word.
+
+---
+
 ## 8b. Words that mean the same thing
 
 The lectures, the books and the assignment all swap between these. They are **not**
